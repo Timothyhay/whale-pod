@@ -1,0 +1,7 @@
+{
+  "//": "Project-level config for WhalePod's own repo. Merged over ~/.whalepod/config.json.",
+  "repo_map": {
+    "//": "reference/ is a vendored third-party tree: 857 files, ~70k tokens of map.",
+    "exclude": ["reference"]
+  }
+}

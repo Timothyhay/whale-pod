@@ -1,0 +1,25 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='720' height='360' viewBox='0 0 720 360'>
+<rect width='720' height='360' fill='#fdfdfc'/>
+<text x='360.0' y='26' text-anchor='middle' fill='#111' font-size='15' font-weight='600' font-family='ui-monospace,Menlo,Consolas,monospace'>Live session prompt tokens: served from cache vs billed fresh</text>
+<text x='360.0' y='44' text-anchor='middle' fill='#666' font-size='12' font-family='ui-monospace,Menlo,Consolas,monospace'>server-reported, one 12-turn session over this repo</text>
+<line x1='84' y1='304' x2='570' y2='304' stroke='#bbb'/>
+<line x1='84' y1='304.0' x2='570' y2='304.0' stroke='#eee'/>
+<text x='76' y='308.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>0k</text>
+<line x1='84' y1='243.5' x2='570' y2='243.5' stroke='#eee'/>
+<text x='76' y='247.5' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>301k</text>
+<line x1='84' y1='183.0' x2='570' y2='183.0' stroke='#eee'/>
+<text x='76' y='187.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>602k</text>
+<line x1='84' y1='122.5' x2='570' y2='122.5' stroke='#eee'/>
+<text x='76' y='126.5' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>902k</text>
+<line x1='84' y1='62.0' x2='570' y2='62.0' stroke='#eee'/>
+<text x='76' y='66.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>1,203k</text>
+<rect x='186.1' y='89.1' width='281.9' height='214.9' fill='#1f6f8b' rx='1'/>
+<rect x='186.1' y='62.0' width='281.9' height='27.1' fill='#e07a3f' rx='1'/>
+<text x='327.0' y='56.0' text-anchor='middle' fill='#333' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>1,203k</text>
+<text x='327.0' y='320.0' text-anchor='middle' fill='#444' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>as-built, pinned</text>
+<rect x='586' y='72' width='14' height='11' fill='#1f6f8b' rx='2'/>
+<text x='606' y='82' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>served from cache</text>
+<rect x='586' y='92' width='14' height='11' fill='#e07a3f' rx='2'/>
+<text x='606' y='102' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>billed fresh</text>
+<text x='16' y='183.0' fill='#333' font-size='12' transform='rotate(-90 16 183.0)' text-anchor='middle' font-family='ui-monospace,Menlo,Consolas,monospace'>prompt tokens</text>
+</svg>

@@ -1,0 +1,162 @@
+﻿== live session, window 1,000,000 ==
+  turn 1/12: Where is prefix caching handled in this codebase?
+  turn 2/12: How does the ledger stop the same file arriving twice?
+  turn 3/12: Walk me through the agent loop.
+  turn 4/12: Remind me what the prune thresholds are in messages.py.
+  turn 5/12: What tools does the registry expose?
+  turn 6/12: Show me the endpoint abstraction.
+  turn 7/12: In agent.py, where exactly is the ledger consulted?
+  turn 8/12: Compare the two provider implementations.
+  turn 9/12: Does the ledger handle a file being edited under it?
+  turn 10/12: How is the repo map budgeted?
+  turn 11/12: Which registry function plans a write?
+  turn 12/12: Finally, how is config resolved?
+== live session, window forced to 63,000 (must prune) ==
+  turn 1/12: Where is prefix caching handled in this codebase?
+  turn 2/12: How does the ledger stop the same file arriving twice?
+  turn 3/12: Walk me through the agent loop.
+  turn 4/12: Remind me what the prune thresholds are in messages.py.
+  turn 5/12: What tools does the registry expose?
+  turn 6/12: Show me the endpoint abstraction.
+    · pruned 3 old turn(s) (~28,138 tokens); prefix cache is now cold, the next request pays full price; 11 loaded file range(s) can be re-read now
+  turn 7/12: In agent.py, where exactly is the ledger consulted?
+  turn 8/12: Compare the two provider implementations.
+  turn 9/12: Does the ledger handle a file being edited under it?
+  turn 10/12: How is the repo map budgeted?
+  turn 11/12: Which registry function plans a write?
+  turn 12/12: Finally, how is config resolved?
+    · pruned 6 old turn(s) (~28,631 tokens); prefix cache is now cold, the next request pays full price; 10 loaded file range(s) can be re-read now
+
+### Live session (12 turns, window 1,000,000)
+
+model ~deepseek/deepseek-v4-flash-latest · provider DeepInfra · window 1,000,000 · 29 requests
+
+Per request, as reported by the server:
+
+  # turn   prompt   cached     hit predicted reason tok    cost $
+-----------------------------------------------------------------
+  1    1   16,105       64    0.4%      0.0%         25  0.001482
+  2    1   19,697       64    0.3%     79.9%         62  0.001822
+  3    1   23,084   19,456   84.3%     83.0%          0  0.000883
+  4    2   24,245   23,040   95.0%     94.4%          0  0.000548
+  5    2   26,552   24,064   90.6%     89.7%          0  0.000685
+  6    2   28,395   26,368   92.9%     92.6%          0  0.000695
+  7    2   28,991   28,160   97.1%     98.0%          0  0.000609
+  8    2   29,796   28,928   97.1%     96.7%          0  0.000809
+  9    3   30,976   29,696   95.9%     95.8%         39  0.000674
+ 10    3   34,402   30,720   89.3%     88.3%          0  0.001167
+ 11    4   35,990   34,304   95.3%     95.4%          0  0.000784
+ 12    4   36,885   35,840   97.2%     97.1%          0  0.000829
+ 13    5   37,394   36,864   98.6%     98.6%          0  0.000721
+ 14    5   40,180   37,376   93.0%     91.6%          0  0.001054
+ 15    6   40,905   39,936   97.6%     98.2%          0  0.000844
+ 16    6   44,233      768    1.7%     91.6%          0  0.003945
+ 17    6   46,642   44,032   94.4%     94.1%          0  0.001047
+ 18    6   47,985   46,592   97.1%     96.8%          0  0.001188
+ 19    7   49,246   47,872   97.2%     97.5%         33  0.001009
+ 20    7   49,971   49,152   98.4%     98.6%          0  0.001087
+ 21    8   50,696   49,920   98.5%     98.5%         65  0.000999
+ 22    8   52,215   50,432   96.6%     96.6%          0  0.001305
+ 23    9   53,546   51,968   97.1%     97.4%        119  0.001244
+ 24   10   54,384   40,704   74.8%     98.3%          0  0.001996
+ 25   10   58,650   54,272   92.5%     92.3%          0  0.001565
+ 26   11   59,739   58,624   98.1%     98.1%          0  0.001171
+ 27   11   59,876   59,648   99.6%     99.7%          0  0.001166
+ 28   12   60,283   59,648   98.9%     99.3%         24  0.001164
+ 29   12   62,099   60,160   96.9%     97.1%          0  0.001465
+
+Measured cache hit rate vs offline-predicted reusable prefix:
+
+ 100% │   ×  ××× ××× ×  ××××××· ××××
+      │   ·××   ×   × ·×       ×    
+  80% │ ·×                          
+      │                       ×     
+  60% │                             
+      │                             
+  40% │                             
+      │                             
+  20% │                             
+      │                             
+   0% │××             ×             
+      └─────────────────────────────
+                                    
+       · predicted (offline)  × measured (server)
+
+session prompt tokens: 1,203,162 (1,068,672 cached, 134,490 billed fresh)
+session hit rate: 88.8%
+reasoning tokens: 367
+prompt cost as billed: $0.03396
+ledger: 1 duplicate read(s) avoided (~2,925 tokens never sent)
+hit rate, first 3 requests: 28.3% -> last 3 requests: 98.5%
+offline prediction vs server: mean absolute error 7.0 points
+
+### Live session at a 63,000-token window (pruning forced)
+
+model ~deepseek/deepseek-v4-flash-latest · provider DeepInfra · window 63,000 · 31 requests
+
+Per request, as reported by the server:
+
+  # turn   prompt   cached     hit predicted reason tok    cost $
+-----------------------------------------------------------------
+  1    1   16,105       64    0.4%      0.0%         12  0.001470
+  2    1   25,199   15,872   63.0%     61.4%         46  0.001177
+  3    1   27,935   25,088   89.8%     88.6%          0  0.000895
+  4    2   28,989   27,904   96.3%     96.0%         11  0.000624
+  5    2   32,135   28,672   89.2%     88.4%          0  0.000872
+  6    2   33,131   32,000   96.6%     96.9%          0  0.000690
+  7    2   33,216   33,024   99.4%     99.7%          0  0.000625
+  8    2   34,420   33,024   95.9%     96.4%          0  0.000752
+  9    2   35,374   34,304   97.0%     96.6%          0  0.000850
+ 10    3   36,140   35,328   97.8%     97.7%         56  0.000749
+ 11    3   39,229   35,840   91.4%     90.8%          0  0.001146
+ 12    4   40,335   39,168   97.1%     97.1%          0  0.000825
+ 13    4   41,142   40,192   97.7%     97.8%          0  0.000827
+ 14    4   42,108       64    0.2%     97.3%          0  0.003893
+ 15    5   42,716   41,984   98.3%     98.5%          0  0.000831
+ 16    5   45,502   42,496   93.4%     92.5%          0  0.001162
+ 17    6   46,213   45,312   98.1%     98.4%         30  0.000918
+ 18    6   26,270       64    0.2%     55.5%          0  0.002574 <- after prune
+ 19    7   27,475   26,112   95.0%     95.6%         42  0.000618
+ 20    7   29,719   27,392   92.2%     91.2%          0  0.000731
+ 21    7   30,601   15,872   51.9%     97.0%          0  0.001631
+ 22    7   31,267   30,464   97.4%     97.4%         29  0.000783
+ 23    8   32,153   29,440   91.6%     97.2%        116  0.000829
+ 24    8   37,726   32,000   84.8%     83.0%          0  0.001383
+ 25    9   39,362   37,632   95.6%     96.0%         35  0.000851
+ 26    9   41,053   39,168   95.4%     95.5%          0  0.001046
+ 27   10   42,014   40,960   97.5%     97.5%         37  0.000868
+ 28   10   45,104   41,728   92.5%     92.9%          0  0.001272
+ 29   11   46,320   45,056   97.3%     97.3%         29  0.001041
+ 30   12   46,949   46,080   98.1%     98.6%         27  0.000927
+ 31   12   26,720   15,872   59.4%     56.1%          0  0.001439 <- after prune
+
+Measured cache hit rate vs offline-predicted reusable prefix:
+
+ 100% │   × ××××× ××·× × × ·×· ××× ×× 
+      │  × ×     ×    ×   ×  ×    ×   
+  80% │                       ×       
+      │                               
+  60% │ ×               ·            ×
+      │                    ×          
+  40% │                               
+      │                               
+  20% │                               
+      │                               
+   0% │×            ×   ×             
+      └───────────────────────────────
+                        ^            ^
+       · predicted (offline)  × measured (server)
+
+session prompt tokens: 1,102,622 (938,176 cached, 164,446 billed fresh)
+session hit rate: 85.1%
+reasoning tokens: 470
+prompt cost as billed: $0.03430
+ledger: 0 duplicate read(s) avoided (~0 tokens never sent)
+hit rate, first 3 requests: 51.1% -> last 3 requests: 84.9%
+offline prediction vs server: mean absolute error 7.1 points
+prune before request 18: pruned 3 old turn(s) (~28,138 tokens); prefix cache is now cold, the next request pays full price; 11 loaded file range(s) can be re-read now
+prune before request 31: pruned 6 old turn(s) (~28,631 tokens); prefix cache is now cold, the next request pays full price; 10 loaded file range(s) can be re-read now
+chart: bench\results\live_hit_rate.svg
+chart: bench\results\live_prune.svg
+chart: bench\results\live_tokens_split.svg
+wrote bench\results\live_acceptance.json

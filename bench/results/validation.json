@@ -1,0 +1,1701 @@
+{
+  "meta": {
+    "root": "X:\\ProgramProjects\\WhalePod",
+    "cache_block": 64,
+    "price_prompt_usd_per_token": 9e-08,
+    "price_cache_read_usd_per_token": 1.8e-08,
+    "tokenizer": "heuristic",
+    "turns": 12
+  },
+  "variants": {
+    "window": 1000000,
+    "label": "1M window (nothing prunes)",
+    "runs": [
+      {
+        "name": "as-built",
+        "note": "two zones, append-only, ledger on",
+        "requests": 26,
+        "prompt_tokens": 1027163,
+        "reusable_tokens": 966336,
+        "fresh_tokens": 60827,
+        "reusable_frac": 0.9408,
+        "prompt_cost_usd": 0.022868,
+        "ledger_hits": 4,
+        "ledger_saved_tokens": 13762,
+        "prunes": 0,
+        "summaries": 0,
+        "final_context_tokens": 57604,
+        "per_request": [
+          {
+            "i": 0,
+            "prompt_tokens": 16816,
+            "reusable_tokens": 0,
+            "reusable_frac": 0.0
+          },
+          {
+            "i": 1,
+            "prompt_tokens": 17132,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9788
+          },
+          {
+            "i": 2,
+            "prompt_tokens": 22360,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.7642
+          },
+          {
+            "i": 3,
+            "prompt_tokens": 22434,
+            "reusable_tokens": 22336,
+            "reusable_frac": 0.9956
+          },
+          {
+            "i": 4,
+            "prompt_tokens": 24597,
+            "reusable_tokens": 22400,
+            "reusable_frac": 0.9107
+          },
+          {
+            "i": 5,
+            "prompt_tokens": 24657,
+            "reusable_tokens": 24576,
+            "reusable_frac": 0.9967
+          },
+          {
+            "i": 6,
+            "prompt_tokens": 31511,
+            "reusable_tokens": 24640,
+            "reusable_frac": 0.7819
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 31571,
+            "reusable_tokens": 31488,
+            "reusable_frac": 0.9974
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 31707,
+            "reusable_tokens": 31552,
+            "reusable_frac": 0.9951
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 31760,
+            "reusable_tokens": 31680,
+            "reusable_frac": 0.9975
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 35697,
+            "reusable_tokens": 31744,
+            "reusable_frac": 0.8893
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 35746,
+            "reusable_tokens": 35648,
+            "reusable_frac": 0.9973
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 40659,
+            "reusable_tokens": 35712,
+            "reusable_frac": 0.8783
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 40714,
+            "reusable_tokens": 40640,
+            "reusable_frac": 0.9982
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 40848,
+            "reusable_tokens": 40704,
+            "reusable_frac": 0.9965
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 40900,
+            "reusable_tokens": 40832,
+            "reusable_frac": 0.9983
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 48070,
+            "reusable_tokens": 40896,
+            "reusable_frac": 0.8508
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 48125,
+            "reusable_tokens": 48064,
+            "reusable_frac": 0.9987
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 48260,
+            "reusable_tokens": 48064,
+            "reusable_frac": 0.9959
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 48307,
+            "reusable_tokens": 48256,
+            "reusable_frac": 0.9989
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 56160,
+            "reusable_tokens": 48256,
+            "reusable_frac": 0.8593
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 56212,
+            "reusable_tokens": 56128,
+            "reusable_frac": 0.9985
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 56349,
+            "reusable_tokens": 56192,
+            "reusable_frac": 0.9972
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 56395,
+            "reusable_tokens": 56320,
+            "reusable_frac": 0.9987
+          },
+          {
+            "i": 24,
+            "prompt_tokens": 59980,
+            "reusable_tokens": 56384,
+            "reusable_frac": 0.94
+          },
+          {
+            "i": 25,
+            "prompt_tokens": 60196,
+            "reusable_tokens": 59968,
+            "reusable_frac": 0.9962
+          }
+        ]
+      },
+      {
+        "name": "no-ledger",
+        "note": "same layout, duplicate reads re-shipped",
+        "requests": 26,
+        "prompt_tokens": 1230881,
+        "reusable_tokens": 1152192,
+        "fresh_tokens": 78689,
+        "reusable_frac": 0.9361,
+        "prompt_cost_usd": 0.027821,
+        "ledger_hits": 0,
+        "ledger_saved_tokens": 0,
+        "prunes": 0,
+        "summaries": 0,
+        "final_context_tokens": 74609,
+        "per_request": [
+          {
+            "i": 0,
+            "prompt_tokens": 16816,
+            "reusable_tokens": 0,
+            "reusable_frac": 0.0
+          },
+          {
+            "i": 1,
+            "prompt_tokens": 17132,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9788
+          },
+          {
+            "i": 2,
+            "prompt_tokens": 22360,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.7642
+          },
+          {
+            "i": 3,
+            "prompt_tokens": 22434,
+            "reusable_tokens": 22336,
+            "reusable_frac": 0.9956
+          },
+          {
+            "i": 4,
+            "prompt_tokens": 24597,
+            "reusable_tokens": 22400,
+            "reusable_frac": 0.9107
+          },
+          {
+            "i": 5,
+            "prompt_tokens": 24657,
+            "reusable_tokens": 24576,
+            "reusable_frac": 0.9967
+          },
+          {
+            "i": 6,
+            "prompt_tokens": 31511,
+            "reusable_tokens": 24640,
+            "reusable_frac": 0.7819
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 31571,
+            "reusable_tokens": 31488,
+            "reusable_frac": 0.9974
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 36799,
+            "reusable_tokens": 31552,
+            "reusable_frac": 0.8574
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 36852,
+            "reusable_tokens": 36736,
+            "reusable_frac": 0.9969
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 40789,
+            "reusable_tokens": 36800,
+            "reusable_frac": 0.9022
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 40838,
+            "reusable_tokens": 40768,
+            "reusable_frac": 0.9983
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 45751,
+            "reusable_tokens": 40832,
+            "reusable_frac": 0.8925
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 45805,
+            "reusable_tokens": 45696,
+            "reusable_frac": 0.9976
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 52660,
+            "reusable_tokens": 45760,
+            "reusable_frac": 0.869
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 52712,
+            "reusable_tokens": 52608,
+            "reusable_frac": 0.998
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 59882,
+            "reusable_tokens": 52672,
+            "reusable_frac": 0.8796
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 59937,
+            "reusable_tokens": 59840,
+            "reusable_frac": 0.9984
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 62100,
+            "reusable_tokens": 59904,
+            "reusable_frac": 0.9646
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 62147,
+            "reusable_tokens": 62080,
+            "reusable_frac": 0.9989
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 70000,
+            "reusable_tokens": 62144,
+            "reusable_frac": 0.8878
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 70052,
+            "reusable_tokens": 69952,
+            "reusable_frac": 0.9986
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 73989,
+            "reusable_tokens": 70016,
+            "reusable_frac": 0.9463
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 74035,
+            "reusable_tokens": 73984,
+            "reusable_frac": 0.9993
+          },
+          {
+            "i": 24,
+            "prompt_tokens": 77619,
+            "reusable_tokens": 73984,
+            "reusable_frac": 0.9532
+          },
+          {
+            "i": 25,
+            "prompt_tokens": 77836,
+            "reusable_tokens": 77568,
+            "reusable_frac": 0.9966
+          }
+        ]
+      },
+      {
+        "name": "rolling-summary",
+        "note": "history collapsed into a summary every 3 turns",
+        "requests": 26,
+        "prompt_tokens": 578765,
+        "reusable_tokens": 517120,
+        "fresh_tokens": 61645,
+        "reusable_frac": 0.8935,
+        "prompt_cost_usd": 0.014856,
+        "ledger_hits": 4,
+        "ledger_saved_tokens": 13762,
+        "prunes": 0,
+        "summaries": 3,
+        "final_context_tokens": 28073,
+        "per_request": [
+          {
+            "i": 0,
+            "prompt_tokens": 16816,
+            "reusable_tokens": 0,
+            "reusable_frac": 0.0
+          },
+          {
+            "i": 1,
+            "prompt_tokens": 17132,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9788
+          },
+          {
+            "i": 2,
+            "prompt_tokens": 22360,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.7642
+          },
+          {
+            "i": 3,
+            "prompt_tokens": 22434,
+            "reusable_tokens": 22336,
+            "reusable_frac": 0.9956
+          },
+          {
+            "i": 4,
+            "prompt_tokens": 24597,
+            "reusable_tokens": 22400,
+            "reusable_frac": 0.9107
+          },
+          {
+            "i": 5,
+            "prompt_tokens": 24657,
+            "reusable_tokens": 24576,
+            "reusable_frac": 0.9967
+          },
+          {
+            "i": 6,
+            "prompt_tokens": 31511,
+            "reusable_tokens": 24640,
+            "reusable_frac": 0.7819
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 17008,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9859
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 17144,
+            "reusable_tokens": 16960,
+            "reusable_frac": 0.9893
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 17197,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.9937
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 21134,
+            "reusable_tokens": 17152,
+            "reusable_frac": 0.8116
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 21183,
+            "reusable_tokens": 21120,
+            "reusable_frac": 0.997
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 26096,
+            "reusable_tokens": 21120,
+            "reusable_frac": 0.8093
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 17017,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9854
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 17152,
+            "reusable_tokens": 16960,
+            "reusable_frac": 0.9888
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 17204,
+            "reusable_tokens": 17152,
+            "reusable_frac": 0.997
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 24373,
+            "reusable_tokens": 17152,
+            "reusable_frac": 0.7037
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 24429,
+            "reusable_tokens": 24320,
+            "reusable_frac": 0.9955
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 24564,
+            "reusable_tokens": 24384,
+            "reusable_frac": 0.9927
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 17044,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9838
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 24897,
+            "reusable_tokens": 17024,
+            "reusable_frac": 0.6838
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 24949,
+            "reusable_tokens": 24896,
+            "reusable_frac": 0.9979
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 25086,
+            "reusable_tokens": 24896,
+            "reusable_frac": 0.9924
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 25132,
+            "reusable_tokens": 25024,
+            "reusable_frac": 0.9957
+          },
+          {
+            "i": 24,
+            "prompt_tokens": 28716,
+            "reusable_tokens": 25088,
+            "reusable_frac": 0.8737
+          },
+          {
+            "i": 25,
+            "prompt_tokens": 28933,
+            "reusable_tokens": 28672,
+            "reusable_frac": 0.991
+          }
+        ]
+      },
+      {
+        "name": "three-zone",
+        "note": "deleted design: volatile working set after history",
+        "requests": 26,
+        "prompt_tokens": 1029713,
+        "reusable_tokens": 450560,
+        "fresh_tokens": 579153,
+        "reusable_frac": 0.4376,
+        "prompt_cost_usd": 0.060234,
+        "ledger_hits": 0,
+        "ledger_saved_tokens": 0,
+        "prunes": 0,
+        "summaries": 0,
+        "final_context_tokens": 57622,
+        "per_request": [
+          {
+            "i": 0,
+            "prompt_tokens": 16816,
+            "reusable_tokens": 0,
+            "reusable_frac": 0.0
+          },
+          {
+            "i": 1,
+            "prompt_tokens": 17132,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9788
+          },
+          {
+            "i": 2,
+            "prompt_tokens": 22407,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.7626
+          },
+          {
+            "i": 3,
+            "prompt_tokens": 22481,
+            "reusable_tokens": 17216,
+            "reusable_frac": 0.7658
+          },
+          {
+            "i": 4,
+            "prompt_tokens": 24671,
+            "reusable_tokens": 17280,
+            "reusable_frac": 0.7004
+          },
+          {
+            "i": 5,
+            "prompt_tokens": 24731,
+            "reusable_tokens": 17408,
+            "reusable_frac": 0.7039
+          },
+          {
+            "i": 6,
+            "prompt_tokens": 31611,
+            "reusable_tokens": 17472,
+            "reusable_frac": 0.5527
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 31671,
+            "reusable_tokens": 17536,
+            "reusable_frac": 0.5537
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 31774,
+            "reusable_tokens": 17600,
+            "reusable_frac": 0.5539
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 31827,
+            "reusable_tokens": 17728,
+            "reusable_frac": 0.557
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 35793,
+            "reusable_tokens": 17728,
+            "reusable_frac": 0.4953
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 35842,
+            "reusable_tokens": 17856,
+            "reusable_frac": 0.4982
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 40784,
+            "reusable_tokens": 17920,
+            "reusable_frac": 0.4394
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 40838,
+            "reusable_tokens": 18048,
+            "reusable_frac": 0.4419
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 40940,
+            "reusable_tokens": 18048,
+            "reusable_frac": 0.4408
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 40992,
+            "reusable_tokens": 18176,
+            "reusable_frac": 0.4434
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 48222,
+            "reusable_tokens": 18240,
+            "reusable_frac": 0.3783
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 48277,
+            "reusable_tokens": 18432,
+            "reusable_frac": 0.3818
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 48379,
+            "reusable_tokens": 18496,
+            "reusable_frac": 0.3823
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 48426,
+            "reusable_tokens": 18560,
+            "reusable_frac": 0.3833
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 56309,
+            "reusable_tokens": 18624,
+            "reusable_frac": 0.3307
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 56361,
+            "reusable_tokens": 18752,
+            "reusable_frac": 0.3327
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 56465,
+            "reusable_tokens": 18752,
+            "reusable_frac": 0.3321
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 56510,
+            "reusable_tokens": 18880,
+            "reusable_frac": 0.3341
+          },
+          {
+            "i": 24,
+            "prompt_tokens": 60119,
+            "reusable_tokens": 18944,
+            "reusable_frac": 0.3151
+          },
+          {
+            "i": 25,
+            "prompt_tokens": 60335,
+            "reusable_tokens": 19008,
+            "reusable_frac": 0.315
+          }
+        ]
+      }
+    ]
+  },
+  "variants_small": {
+    "window": 52000,
+    "label": "52,000 window (as-built has to prune)",
+    "runs": [
+      {
+        "name": "as-built",
+        "note": "two zones, append-only, ledger on",
+        "requests": 26,
+        "prompt_tokens": 854724,
+        "reusable_tokens": 789760,
+        "fresh_tokens": 64964,
+        "reusable_frac": 0.924,
+        "prompt_cost_usd": 0.020062,
+        "ledger_hits": 3,
+        "ledger_saved_tokens": 10837,
+        "prunes": 1,
+        "summaries": 0,
+        "final_context_tokens": 31606,
+        "per_request": [
+          {
+            "i": 0,
+            "prompt_tokens": 16816,
+            "reusable_tokens": 0,
+            "reusable_frac": 0.0
+          },
+          {
+            "i": 1,
+            "prompt_tokens": 17132,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9788
+          },
+          {
+            "i": 2,
+            "prompt_tokens": 22360,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.7642
+          },
+          {
+            "i": 3,
+            "prompt_tokens": 22434,
+            "reusable_tokens": 22336,
+            "reusable_frac": 0.9956
+          },
+          {
+            "i": 4,
+            "prompt_tokens": 24597,
+            "reusable_tokens": 22400,
+            "reusable_frac": 0.9107
+          },
+          {
+            "i": 5,
+            "prompt_tokens": 24657,
+            "reusable_tokens": 24576,
+            "reusable_frac": 0.9967
+          },
+          {
+            "i": 6,
+            "prompt_tokens": 31511,
+            "reusable_tokens": 24640,
+            "reusable_frac": 0.7819
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 31571,
+            "reusable_tokens": 31488,
+            "reusable_frac": 0.9974
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 31707,
+            "reusable_tokens": 31552,
+            "reusable_frac": 0.9951
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 31760,
+            "reusable_tokens": 31680,
+            "reusable_frac": 0.9975
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 35697,
+            "reusable_tokens": 31744,
+            "reusable_frac": 0.8893
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 35746,
+            "reusable_tokens": 35648,
+            "reusable_frac": 0.9973
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 40659,
+            "reusable_tokens": 35712,
+            "reusable_frac": 0.8783
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 40714,
+            "reusable_tokens": 40640,
+            "reusable_frac": 0.9982
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 40848,
+            "reusable_tokens": 40704,
+            "reusable_frac": 0.9965
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 40900,
+            "reusable_tokens": 40832,
+            "reusable_frac": 0.9983
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 48070,
+            "reusable_tokens": 40896,
+            "reusable_frac": 0.8508
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 48125,
+            "reusable_tokens": 48064,
+            "reusable_frac": 0.9987
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 48260,
+            "reusable_tokens": 48064,
+            "reusable_frac": 0.9959
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 48307,
+            "reusable_tokens": 48256,
+            "reusable_frac": 0.9989
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 24887,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.6738
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 24939,
+            "reusable_tokens": 24832,
+            "reusable_frac": 0.9957
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 28876,
+            "reusable_tokens": 24896,
+            "reusable_frac": 0.8622
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 28922,
+            "reusable_tokens": 28864,
+            "reusable_frac": 0.998
+          },
+          {
+            "i": 24,
+            "prompt_tokens": 32506,
+            "reusable_tokens": 28864,
+            "reusable_frac": 0.888
+          },
+          {
+            "i": 25,
+            "prompt_tokens": 32723,
+            "reusable_tokens": 32448,
+            "reusable_frac": 0.9916
+          }
+        ]
+      },
+      {
+        "name": "no-ledger",
+        "note": "same layout, duplicate reads re-shipped",
+        "requests": 26,
+        "prompt_tokens": 834940,
+        "reusable_tokens": 752256,
+        "fresh_tokens": 82684,
+        "reusable_frac": 0.901,
+        "prompt_cost_usd": 0.020982,
+        "ledger_hits": 0,
+        "ledger_saved_tokens": 0,
+        "prunes": 2,
+        "summaries": 0,
+        "final_context_tokens": 23944,
+        "per_request": [
+          {
+            "i": 0,
+            "prompt_tokens": 16816,
+            "reusable_tokens": 0,
+            "reusable_frac": 0.0
+          },
+          {
+            "i": 1,
+            "prompt_tokens": 17132,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9788
+          },
+          {
+            "i": 2,
+            "prompt_tokens": 22360,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.7642
+          },
+          {
+            "i": 3,
+            "prompt_tokens": 22434,
+            "reusable_tokens": 22336,
+            "reusable_frac": 0.9956
+          },
+          {
+            "i": 4,
+            "prompt_tokens": 24597,
+            "reusable_tokens": 22400,
+            "reusable_frac": 0.9107
+          },
+          {
+            "i": 5,
+            "prompt_tokens": 24657,
+            "reusable_tokens": 24576,
+            "reusable_frac": 0.9967
+          },
+          {
+            "i": 6,
+            "prompt_tokens": 31511,
+            "reusable_tokens": 24640,
+            "reusable_frac": 0.7819
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 31571,
+            "reusable_tokens": 31488,
+            "reusable_frac": 0.9974
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 36799,
+            "reusable_tokens": 31552,
+            "reusable_frac": 0.8574
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 36852,
+            "reusable_tokens": 36736,
+            "reusable_frac": 0.9969
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 40789,
+            "reusable_tokens": 36800,
+            "reusable_frac": 0.9022
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 40838,
+            "reusable_tokens": 40768,
+            "reusable_frac": 0.9983
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 45751,
+            "reusable_tokens": 40832,
+            "reusable_frac": 0.8925
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 45805,
+            "reusable_tokens": 45696,
+            "reusable_frac": 0.9976
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 23707,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.7073
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 23759,
+            "reusable_tokens": 23680,
+            "reusable_frac": 0.9967
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 30928,
+            "reusable_tokens": 23744,
+            "reusable_frac": 0.7677
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 30984,
+            "reusable_tokens": 30912,
+            "reusable_frac": 0.9977
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 33147,
+            "reusable_tokens": 30976,
+            "reusable_frac": 0.9345
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 33194,
+            "reusable_tokens": 33088,
+            "reusable_frac": 0.9968
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 41047,
+            "reusable_tokens": 33152,
+            "reusable_frac": 0.8077
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 41099,
+            "reusable_tokens": 41024,
+            "reusable_frac": 0.9982
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 45035,
+            "reusable_tokens": 41088,
+            "reusable_frac": 0.9124
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 45081,
+            "reusable_tokens": 44992,
+            "reusable_frac": 0.998
+          },
+          {
+            "i": 24,
+            "prompt_tokens": 24415,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.6868
+          },
+          {
+            "i": 25,
+            "prompt_tokens": 24632,
+            "reusable_tokens": 24384,
+            "reusable_frac": 0.9899
+          }
+        ]
+      },
+      {
+        "name": "rolling-summary",
+        "note": "history collapsed into a summary every 3 turns",
+        "requests": 26,
+        "prompt_tokens": 578765,
+        "reusable_tokens": 517120,
+        "fresh_tokens": 61645,
+        "reusable_frac": 0.8935,
+        "prompt_cost_usd": 0.014856,
+        "ledger_hits": 4,
+        "ledger_saved_tokens": 13762,
+        "prunes": 0,
+        "summaries": 3,
+        "final_context_tokens": 28073,
+        "per_request": [
+          {
+            "i": 0,
+            "prompt_tokens": 16816,
+            "reusable_tokens": 0,
+            "reusable_frac": 0.0
+          },
+          {
+            "i": 1,
+            "prompt_tokens": 17132,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9788
+          },
+          {
+            "i": 2,
+            "prompt_tokens": 22360,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.7642
+          },
+          {
+            "i": 3,
+            "prompt_tokens": 22434,
+            "reusable_tokens": 22336,
+            "reusable_frac": 0.9956
+          },
+          {
+            "i": 4,
+            "prompt_tokens": 24597,
+            "reusable_tokens": 22400,
+            "reusable_frac": 0.9107
+          },
+          {
+            "i": 5,
+            "prompt_tokens": 24657,
+            "reusable_tokens": 24576,
+            "reusable_frac": 0.9967
+          },
+          {
+            "i": 6,
+            "prompt_tokens": 31511,
+            "reusable_tokens": 24640,
+            "reusable_frac": 0.7819
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 17008,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9859
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 17144,
+            "reusable_tokens": 16960,
+            "reusable_frac": 0.9893
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 17197,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.9937
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 21134,
+            "reusable_tokens": 17152,
+            "reusable_frac": 0.8116
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 21183,
+            "reusable_tokens": 21120,
+            "reusable_frac": 0.997
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 26096,
+            "reusable_tokens": 21120,
+            "reusable_frac": 0.8093
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 17017,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9854
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 17152,
+            "reusable_tokens": 16960,
+            "reusable_frac": 0.9888
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 17204,
+            "reusable_tokens": 17152,
+            "reusable_frac": 0.997
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 24373,
+            "reusable_tokens": 17152,
+            "reusable_frac": 0.7037
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 24429,
+            "reusable_tokens": 24320,
+            "reusable_frac": 0.9955
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 24564,
+            "reusable_tokens": 24384,
+            "reusable_frac": 0.9927
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 17044,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9838
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 24897,
+            "reusable_tokens": 17024,
+            "reusable_frac": 0.6838
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 24949,
+            "reusable_tokens": 24896,
+            "reusable_frac": 0.9979
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 25086,
+            "reusable_tokens": 24896,
+            "reusable_frac": 0.9924
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 25132,
+            "reusable_tokens": 25024,
+            "reusable_frac": 0.9957
+          },
+          {
+            "i": 24,
+            "prompt_tokens": 28716,
+            "reusable_tokens": 25088,
+            "reusable_frac": 0.8737
+          },
+          {
+            "i": 25,
+            "prompt_tokens": 28933,
+            "reusable_tokens": 28672,
+            "reusable_frac": 0.991
+          }
+        ]
+      },
+      {
+        "name": "three-zone",
+        "note": "deleted design: volatile working set after history",
+        "requests": 26,
+        "prompt_tokens": 1029713,
+        "reusable_tokens": 450560,
+        "fresh_tokens": 579153,
+        "reusable_frac": 0.4376,
+        "prompt_cost_usd": 0.060234,
+        "ledger_hits": 0,
+        "ledger_saved_tokens": 0,
+        "prunes": 0,
+        "summaries": 0,
+        "final_context_tokens": 57622,
+        "per_request": [
+          {
+            "i": 0,
+            "prompt_tokens": 16816,
+            "reusable_tokens": 0,
+            "reusable_frac": 0.0
+          },
+          {
+            "i": 1,
+            "prompt_tokens": 17132,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.9788
+          },
+          {
+            "i": 2,
+            "prompt_tokens": 22407,
+            "reusable_tokens": 17088,
+            "reusable_frac": 0.7626
+          },
+          {
+            "i": 3,
+            "prompt_tokens": 22481,
+            "reusable_tokens": 17216,
+            "reusable_frac": 0.7658
+          },
+          {
+            "i": 4,
+            "prompt_tokens": 24671,
+            "reusable_tokens": 17280,
+            "reusable_frac": 0.7004
+          },
+          {
+            "i": 5,
+            "prompt_tokens": 24731,
+            "reusable_tokens": 17408,
+            "reusable_frac": 0.7039
+          },
+          {
+            "i": 6,
+            "prompt_tokens": 31611,
+            "reusable_tokens": 17472,
+            "reusable_frac": 0.5527
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 31671,
+            "reusable_tokens": 17536,
+            "reusable_frac": 0.5537
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 31774,
+            "reusable_tokens": 17600,
+            "reusable_frac": 0.5539
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 31827,
+            "reusable_tokens": 17728,
+            "reusable_frac": 0.557
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 35793,
+            "reusable_tokens": 17728,
+            "reusable_frac": 0.4953
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 35842,
+            "reusable_tokens": 17856,
+            "reusable_frac": 0.4982
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 40784,
+            "reusable_tokens": 17920,
+            "reusable_frac": 0.4394
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 40838,
+            "reusable_tokens": 18048,
+            "reusable_frac": 0.4419
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 40940,
+            "reusable_tokens": 18048,
+            "reusable_frac": 0.4408
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 40992,
+            "reusable_tokens": 18176,
+            "reusable_frac": 0.4434
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 48222,
+            "reusable_tokens": 18240,
+            "reusable_frac": 0.3783
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 48277,
+            "reusable_tokens": 18432,
+            "reusable_frac": 0.3818
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 48379,
+            "reusable_tokens": 18496,
+            "reusable_frac": 0.3823
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 48426,
+            "reusable_tokens": 18560,
+            "reusable_frac": 0.3833
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 56309,
+            "reusable_tokens": 18624,
+            "reusable_frac": 0.3307
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 56361,
+            "reusable_tokens": 18752,
+            "reusable_frac": 0.3327
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 56465,
+            "reusable_tokens": 18752,
+            "reusable_frac": 0.3321
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 56510,
+            "reusable_tokens": 18880,
+            "reusable_frac": 0.3341
+          },
+          {
+            "i": 24,
+            "prompt_tokens": 60119,
+            "reusable_tokens": 18944,
+            "reusable_frac": 0.3151
+          },
+          {
+            "i": 25,
+            "prompt_tokens": 60335,
+            "reusable_tokens": 19008,
+            "reusable_frac": 0.315
+          }
+        ]
+      }
+    ]
+  },
+  "prune_window": 52000,
+  "prune": {
+    "window": 52000,
+    "prunes": 1,
+    "prune_events": [
+      {
+        "at_request": 20,
+        "detail": "pruned 8 old turn(s) (~29,629 tokens); prefix cache is now cold, the next request pays full price; 7 loaded file range(s) can be re-read now"
+      }
+    ],
+    "events": [
+      {
+        "turns_dropped": 8,
+        "messages_dropped": 35,
+        "tokens_dropped": 29629,
+        "tokens_after": 24239
+      }
+    ],
+    "per_request": [
+      {
+        "i": 0,
+        "prompt_tokens": 16816,
+        "reusable_tokens": 0,
+        "reusable_frac": 0.0
+      },
+      {
+        "i": 1,
+        "prompt_tokens": 17132,
+        "reusable_tokens": 16768,
+        "reusable_frac": 0.9788
+      },
+      {
+        "i": 2,
+        "prompt_tokens": 22360,
+        "reusable_tokens": 17088,
+        "reusable_frac": 0.7642
+      },
+      {
+        "i": 3,
+        "prompt_tokens": 22434,
+        "reusable_tokens": 22336,
+        "reusable_frac": 0.9956
+      },
+      {
+        "i": 4,
+        "prompt_tokens": 24597,
+        "reusable_tokens": 22400,
+        "reusable_frac": 0.9107
+      },
+      {
+        "i": 5,
+        "prompt_tokens": 24657,
+        "reusable_tokens": 24576,
+        "reusable_frac": 0.9967
+      },
+      {
+        "i": 6,
+        "prompt_tokens": 31511,
+        "reusable_tokens": 24640,
+        "reusable_frac": 0.7819
+      },
+      {
+        "i": 7,
+        "prompt_tokens": 31571,
+        "reusable_tokens": 31488,
+        "reusable_frac": 0.9974
+      },
+      {
+        "i": 8,
+        "prompt_tokens": 31707,
+        "reusable_tokens": 31552,
+        "reusable_frac": 0.9951
+      },
+      {
+        "i": 9,
+        "prompt_tokens": 31760,
+        "reusable_tokens": 31680,
+        "reusable_frac": 0.9975
+      },
+      {
+        "i": 10,
+        "prompt_tokens": 35697,
+        "reusable_tokens": 31744,
+        "reusable_frac": 0.8893
+      },
+      {
+        "i": 11,
+        "prompt_tokens": 35746,
+        "reusable_tokens": 35648,
+        "reusable_frac": 0.9973
+      },
+      {
+        "i": 12,
+        "prompt_tokens": 40659,
+        "reusable_tokens": 35712,
+        "reusable_frac": 0.8783
+      },
+      {
+        "i": 13,
+        "prompt_tokens": 40714,
+        "reusable_tokens": 40640,
+        "reusable_frac": 0.9982
+      },
+      {
+        "i": 14,
+        "prompt_tokens": 40848,
+        "reusable_tokens": 40704,
+        "reusable_frac": 0.9965
+      },
+      {
+        "i": 15,
+        "prompt_tokens": 40900,
+        "reusable_tokens": 40832,
+        "reusable_frac": 0.9983
+      },
+      {
+        "i": 16,
+        "prompt_tokens": 48070,
+        "reusable_tokens": 40896,
+        "reusable_frac": 0.8508
+      },
+      {
+        "i": 17,
+        "prompt_tokens": 48125,
+        "reusable_tokens": 48064,
+        "reusable_frac": 0.9987
+      },
+      {
+        "i": 18,
+        "prompt_tokens": 48260,
+        "reusable_tokens": 48064,
+        "reusable_frac": 0.9959
+      },
+      {
+        "i": 19,
+        "prompt_tokens": 48307,
+        "reusable_tokens": 48256,
+        "reusable_frac": 0.9989
+      },
+      {
+        "i": 20,
+        "prompt_tokens": 24887,
+        "reusable_tokens": 16768,
+        "reusable_frac": 0.6738
+      },
+      {
+        "i": 21,
+        "prompt_tokens": 24939,
+        "reusable_tokens": 24832,
+        "reusable_frac": 0.9957
+      },
+      {
+        "i": 22,
+        "prompt_tokens": 28876,
+        "reusable_tokens": 24896,
+        "reusable_frac": 0.8622
+      },
+      {
+        "i": 23,
+        "prompt_tokens": 28922,
+        "reusable_tokens": 28864,
+        "reusable_frac": 0.998
+      },
+      {
+        "i": 24,
+        "prompt_tokens": 32506,
+        "reusable_tokens": 28864,
+        "reusable_frac": 0.888
+      },
+      {
+        "i": 25,
+        "prompt_tokens": 32723,
+        "reusable_tokens": 32448,
+        "reusable_frac": 0.9916
+      }
+    ],
+    "reusable_frac": 0.924
+  },
+  "repomap": {
+    "auto_budget_1m_window": 15000,
+    "files_indexed": 32,
+    "symbols_indexed": 590,
+    "treesitter": true,
+    "curve": [
+      {
+        "budget": 2000,
+        "tokens": 2030,
+        "lines": 73,
+        "truncated": true
+      },
+      {
+        "budget": 4000,
+        "tokens": 4042,
+        "lines": 148,
+        "truncated": true
+      },
+      {
+        "budget": 6000,
+        "tokens": 5991,
+        "lines": 215,
+        "truncated": true
+      },
+      {
+        "budget": 8000,
+        "tokens": 7980,
+        "lines": 277,
+        "truncated": true
+      },
+      {
+        "budget": 12000,
+        "tokens": 11943,
+        "lines": 402,
+        "truncated": true
+      },
+      {
+        "budget": 16000,
+        "tokens": 15932,
+        "lines": 532,
+        "truncated": true
+      },
+      {
+        "budget": 24000,
+        "tokens": 17492,
+        "lines": 590,
+        "truncated": false
+      }
+    ],
+    "unbounded_tokens": 17492,
+    "unbounded_with_vendored_tokens": 63721
+  },
+  "deny": {
+    "commands_tested": 9,
+    "all_refused": true,
+    "spawned_denied_commands": [],
+    "positive_control": {
+      "command": "echo hello",
+      "reached_subprocess": true
+    },
+    "results": [
+      {
+        "command": "mkfs.ext4 /dev/sda1",
+        "refused": true,
+        "reason": "[error] ERROR: refused: filesystem creation (`mkfs.ext4 /dev/sda1`)",
+        "plan_time_denied": true
+      },
+      {
+        "command": "dd if=/dev/zero of=/dev/sda bs=1M",
+        "refused": true,
+        "reason": "[error] ERROR: refused: raw write to a device (`dd if=/dev/zero of=/dev/sda bs=1M`)",
+        "plan_time_denied": true
+      },
+      {
+        "command": "echo hi && rm -rf /",
+        "refused": true,
+        "reason": "[error] ERROR: refused: recursive delete of a protected location ('/')",
+        "plan_time_denied": true
+      },
+      {
+        "command": "true; shutdown -h now",
+        "refused": true,
+        "reason": "[error] ERROR: refused: changes host power state (`true; shutdown -h now`)",
+        "plan_time_denied": true
+      },
+      {
+        "command": ":(){ :|:& };:",
+        "refused": true,
+        "reason": "[error] ERROR: refused: fork bomb (`:(){ :|:& };:`)",
+        "plan_time_denied": true
+      },
+      {
+        "command": "git push --force",
+        "refused": true,
+        "reason": "[error] ERROR: refused: force push (rewrites published history) (`git push --force`)",
+        "plan_time_denied": true
+      },
+      {
+        "command": "diskpart /s script.txt",
+        "refused": true,
+        "reason": "[error] ERROR: refused: disk partitioning (`diskpart /s script.txt`)",
+        "plan_time_denied": true
+      },
+      {
+        "command": "format c: /q",
+        "refused": true,
+        "reason": "[error] ERROR: refused: disk formatting (`format c: /q`)",
+        "plan_time_denied": true
+      },
+      {
+        "command": "cat /etc/passwd > /dev/sda",
+        "refused": true,
+        "reason": "[error] ERROR: refused: raw write to a device (`cat /etc/passwd > /dev/sda`)",
+        "plan_time_denied": true
+      }
+    ]
+  }
+}

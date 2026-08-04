@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "whalepod"
+version = "0.1.0"
+description = "A CLI coding agent optimized for DeepSeek's large-context (1M) models, with multi-endpoint support."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "WhalePod Contributors" }]
+keywords = ["cli", "agent", "deepseek", "coding", "ai", "context"]
+
+dependencies = [
+    "click>=8.1",
+    "rich>=13.0",
+    "httpx>=0.27",
+    "pydantic>=2.0",
+    "pygments>=2.15",
+]
+
+[project.urls]
+Homepage = "https://github.com/Timothyhay/whale-pod"
+Repository = "https://github.com/Timothyhay/whale-pod.git"
+Issues = "https://github.com/Timothyhay/whale-pod/issues"
+
+[project.optional-dependencies]
+# tree-sitter backends for Repo Map. Core is pure-python fallback.
+treesitter = [
+    "tree-sitter>=0.24",
+    "tree-sitter-python",
+    "tree-sitter-javascript",
+]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+whalepod = "whalepod.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["whalepod*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

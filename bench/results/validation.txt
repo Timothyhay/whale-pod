@@ -1,0 +1,121 @@
+### Context design variants (window 1,000,000, 26 requests)
+
+variant            prompt tok   reusable   reuse  billed tok   prompt $  cuts  vs as-built
+------------------------------------------------------------------------------------------
+as-built            1,027,163    966,336   94.1%      60,827    0.02287     0            —
+no-ledger           1,230,881  1,152,192   93.6%      78,689    0.02782     0    +22% cost
+rolling-summary       578,765    517,120   89.3%      61,645    0.01486     3    -35% cost
+three-zone          1,029,713    450,560   43.8%     579,153    0.06023     0   +163% cost
+
+Reusable prefix per request (share of that request's prompt):
+
+ 100% │ ● ● ● ●●● ● ●●● ●●● ●●●·●
+      │    ●   · ● ● · ●   ● · ● 
+  80% │  ●○  ●   × ×             
+      │    ○○          ×   ×     
+  60% │      ○○○○                
+      │          ○○              
+  40% │            ○○○○○○○○      
+      │                    ○○○○○○
+  20% │                          
+      │                          
+   0% │●                         
+      └──────────────────────────
+       · no-ledger  × rolling-summary  ○ three-zone  ● as-built
+
+Session prompt cost, $ (cached tokens billed at 20%):
+
+as-built         ████████████████▊                            $0.02287
+no-ledger        ████████████████████▍                        $0.02782
+rolling-summary  ██████████▉                                  $0.01486
+three-zone       ████████████████████████████████████████████ $0.06023
+
+### Context design variants (window 52,000, 26 requests)
+
+variant            prompt tok   reusable   reuse  billed tok   prompt $  cuts  vs as-built
+------------------------------------------------------------------------------------------
+as-built              854,724    789,760   92.4%      64,964    0.02006     1            —
+no-ledger             834,940    752,256   90.1%      82,684    0.02098     2     +5% cost
+rolling-summary       578,765    517,120   89.3%      61,645    0.01486     3    -26% cost
+three-zone          1,029,713    450,560   43.8%     579,153    0.06023     0   +200% cost
+
+Reusable prefix per request (share of that request's prompt):
+
+ 100% │ ● ● ● ●●● ● ●●● ●●● ●×● ●
+      │    ●   · ● ●   ● ·   ● ● 
+  80% │  ●○  ●   × ×   ·   ·     
+      │    ○○        · ×   ●   · 
+  60% │      ○○○○                
+      │          ○○              
+  40% │            ○○○○○○○○      
+      │                    ○○○○○○
+  20% │                          
+      │                          
+   0% │●                         
+      └──────────────────────────
+       · no-ledger  × rolling-summary  ○ three-zone  ● as-built
+
+Session prompt cost, $ (cached tokens billed at 20%):
+
+as-built         ██████████████▊                              $0.02006
+no-ledger        ███████████████▍                             $0.02098
+rolling-summary  ██████████▉                                  $0.01486
+three-zone       ████████████████████████████████████████████ $0.06023
+
+### Pruning at a 52,000-token window
+
+prunes: 1
+  dropped 8 turn(s) / 35 message(s), ~29,629 tokens -> 24,239 in context
+
+Reusable prefix per request (▼ = prune):
+
+ 100% │ · · · ··· · ··· ··· · · ·
+      │    ·     · ·   ·     · · 
+  80% │  ·   ·                   
+      │                    ·     
+  60% │                          
+      │                          
+  40% │                          
+      │                          
+  20% │                          
+      │                          
+   0% │·                         
+      └──────────────────────────
+                          ▼      
+       · as-built @ small window
+
+session reusable prefix: 92.4%
+
+### Repo-map token budget
+
+32 files, 590 symbols indexed (tree-sitter: True)
+auto budget for a 1M window: 15,000 tokens
+unbudgeted render of the same index: 17,492 tokens
+unbudgeted, vendored reference/ included (a fresh checkout before excludes): 63,721 tokens
+
+Rendered size vs configured budget:
+
+ 2,000  █████▏                                        2,030 tok
+ 4,000  ██████████▎                                   4,042 tok
+ 6,000  ███████████████▏                              5,991 tok
+ 8,000  ████████████████████▏                         7,980 tok
+12,000  ██████████████████████████████               11,943 tok
+16,000  ████████████████████████████████████████▏    15,932 tok
+24,000  ████████████████████████████████████████████ 17,492 tok
+
+### Deny tier under --yes
+
+commands tested: 9
+all refused: True
+denied commands that reached subprocess: 0
+positive control (`echo hello`) reached subprocess: True
+
+  [refused] mkfs.ext4 /dev/sda1
+  [refused] dd if=/dev/zero of=/dev/sda bs=1M
+  [refused] echo hi && rm -rf /
+  [refused] true; shutdown -h now
+  [refused] :(){ :|:& };:
+  [refused] git push --force
+  [refused] diskpart /s script.txt
+  [refused] format c: /q
+  [refused] cat /etc/passwd > /dev/sda

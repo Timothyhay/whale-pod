@@ -1,0 +1,37 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='720' height='360' viewBox='0 0 720 360'>
+<rect width='720' height='360' fill='#fdfdfc'/>
+<text x='360.0' y='26' text-anchor='middle' fill='#111' font-size='15' font-weight='600' font-family='ui-monospace,Menlo,Consolas,monospace'>Session prompt tokens: reusable prefix vs freshly billed</text>
+<text x='360.0' y='44' text-anchor='middle' fill='#666' font-size='12' font-family='ui-monospace,Menlo,Consolas,monospace'>taller is worse; the dark part is what you pay full price for</text>
+<line x1='84' y1='304' x2='570' y2='304' stroke='#bbb'/>
+<line x1='84' y1='304.0' x2='570' y2='304.0' stroke='#eee'/>
+<text x='76' y='308.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>0k</text>
+<line x1='84' y1='243.5' x2='570' y2='243.5' stroke='#eee'/>
+<text x='76' y='247.5' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>308k</text>
+<line x1='84' y1='183.0' x2='570' y2='183.0' stroke='#eee'/>
+<text x='76' y='187.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>615k</text>
+<line x1='84' y1='122.5' x2='570' y2='122.5' stroke='#eee'/>
+<text x='76' y='126.5' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>923k</text>
+<line x1='84' y1='62.0' x2='570' y2='62.0' stroke='#eee'/>
+<text x='76' y='66.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>1,231k</text>
+<rect x='109.5' y='114.0' width='70.5' height='190.0' fill='#1f6f8b' rx='1'/>
+<rect x='109.5' y='102.1' width='70.5' height='12.0' fill='#e07a3f' rx='1'/>
+<text x='144.8' y='96.1' text-anchor='middle' fill='#333' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>1,027k</text>
+<text x='144.8' y='320.0' text-anchor='middle' fill='#444' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>as-built</text>
+<rect x='231.0' y='77.5' width='70.5' height='226.5' fill='#1f6f8b' rx='1'/>
+<rect x='231.0' y='62.0' width='70.5' height='15.5' fill='#e07a3f' rx='1'/>
+<text x='266.2' y='56.0' text-anchor='middle' fill='#333' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>1,231k</text>
+<text x='266.2' y='320.0' text-anchor='middle' fill='#444' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>no-ledger</text>
+<rect x='352.5' y='202.3' width='70.5' height='101.7' fill='#1f6f8b' rx='1'/>
+<rect x='352.5' y='190.2' width='70.5' height='12.1' fill='#e07a3f' rx='1'/>
+<text x='387.8' y='184.2' text-anchor='middle' fill='#333' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>579k</text>
+<text x='387.8' y='320.0' text-anchor='middle' fill='#444' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>rolling-summary</text>
+<rect x='474.0' y='215.4' width='70.5' height='88.6' fill='#1f6f8b' rx='1'/>
+<rect x='474.0' y='101.6' width='70.5' height='113.9' fill='#e07a3f' rx='1'/>
+<text x='509.2' y='95.6' text-anchor='middle' fill='#333' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>1,030k</text>
+<text x='509.2' y='320.0' text-anchor='middle' fill='#444' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>three-zone</text>
+<rect x='586' y='72' width='14' height='11' fill='#1f6f8b' rx='2'/>
+<text x='606' y='82' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>reusable prefix</text>
+<rect x='586' y='92' width='14' height='11' fill='#e07a3f' rx='2'/>
+<text x='606' y='102' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>billed fresh</text>
+<text x='16' y='183.0' fill='#333' font-size='12' transform='rotate(-90 16 183.0)' text-anchor='middle' font-family='ui-monospace,Menlo,Consolas,monospace'>prompt tokens</text>
+</svg>

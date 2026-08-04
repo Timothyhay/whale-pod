@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local config / secrets (never commit real keys)
+# NB: gitignore has no inline comments — a trailing "# ..." becomes part of the
+# pattern, so keep comments on their own line.
+*.key
+.env
+.env.*
+
+# Agent tooling. settings.local.json holds real API keys for whichever agent is
+# driving this repo; it is machine-local by definition and must never ship.
+.claude/
+
+# Vendored third-party reference trees. Read for study, not ours to redistribute,
+# and ~857 files of someone else's project.
+reference/
+
+# Internal design/progress notes — kept local, not part of the release.
+# NB: bench/ and bench/results/ ARE published, so the numbers quoted in README
+# stay reproducible from the scripts and the recorded JSON even without these.
+docs/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# downloaded wheels used during local offline installs
+.wheels/
+
+# scratch test output
+.suite.log

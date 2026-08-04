@@ -34,6 +34,62 @@ and both benches re-run with one command (see
 
 ---
 
+## Why the cache actually hits
+
+A prefix cache only pays out if the beginning of the request is **byte-identical**
+to last time. That single constraint decides the whole layout, so the first thing
+built was a bench that replays one 12-turn session through four different context
+designs and measures the reusable prefix on the bytes actually sent.
+
+![Reusable prefix per request, by context design](bench/results/reusable_prefix.svg)
+
+This is the argument in one picture. Read the *shape*, not just the height:
+
+- **as-built** pins at 99.9% and dips to 76–89% exactly when new file content
+  arrives — the sawtooth is the only thing you should ever pay full price for.
+- **three-zone** starts at 97.9% and **decays to 31.5%**. Putting a volatile
+  "working set" zone *after* the history means every turn pushes more bytes
+  behind the mutation point, so the tail of the prefix is re-billed every time.
+  That design was deleted before it was written; this chart is why.
+- **no-ledger** looks almost as good by *rate* (93.6% vs 94.1%) while shipping
+  **20% more tokens** (1,230,881 vs 1,027,163). A high hit rate on a bloated
+  prompt is still an expensive prompt — which is why hit rate is treated here as
+  a cost metric, never a scorecard.
+
+Then the same session, run for real against DeepSeek V4:
+
+![Measured prefix-cache hit rate, live](bench/results/live_hit_rate.svg)
+
+Requests #1–#2 near zero is **correct** — there is nothing to hit yet. From #3
+it sits at 84–99.6% (23 of 29 requests above 90%, median 96.6%), apart from two
+collapses: #16 at 1.7% and #24 at 74.9%, both of which the offline model
+predicted at ≥91%. That gap is the provider evicting the cache, not the prefix
+breaking — the very next request recovers to 94.4% and 92.5% respectively, with
+no intervention. Offline prediction tracks the server to a mean absolute error of
+7.0 points, and those two dips are most of it. Which is the point of the metric:
+**a hit rate is a cost number, not a correctness number**, so nothing in the
+agent assumes the cache is there.
+
+![Live session prompt tokens: served from cache vs billed fresh](bench/results/live_tokens_split.svg)
+
+The payoff, in tokens rather than percentages: of 1,203,162 prompt tokens,
+1,068,672 came from cache and only 134,490 were billed fresh. At the recorded
+DeepInfra rates that is $0.03134 instead of $0.10828 — and you can recompute it
+yourself from `live_acceptance.json`, since the price list travels with the data.
+
+Two conditions this rests on, both learned the hard way:
+**pin the provider** (a prefix cache is state on one machine — unpinned routing
+measured 0.4% against 98.4% pinned), and **put the volatile part last**.
+
+The remaining case is a forced context reduction, which necessarily breaks the
+prefix. It costs one request and then recovers: live at a 63,000-token window
+(`live_prune.svg`), the prune landed on request #18 at 0.2% and #19 was back to
+95.0%, ending the session at 85.1% overall. Offline at 52,000
+(`prune_recovery.svg`), one prune still leaves 92.4% of the session's prefix
+reusable. That is the whole price of reduction, measured.
+
+---
+
 ## Highlights
 
 - **Two-zone context management** — a byte-stable prefix (tool defs + one system

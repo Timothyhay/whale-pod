@@ -60,12 +60,18 @@ except ImportError:                              # run as a plain script
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import charts                                # type: ignore
 
+try:
+    from . import dsv4_encoding
+except ImportError:                              # run as a plain script
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import dsv4_encoding                          # type: ignore
+
 from whalepod.context.repo_map import build_repo_map
 from whalepod.core.agent import Agent, AgentConfig
 from whalepod.core.ledger import ContextLedger
 from whalepod.core.messages import MessageManager
 from whalepod.core.prompt import build_system_prompt, repo_map_section
-from whalepod.core.tokenizer import estimate_tokens
+from whalepod.core.tokenizer import active_tokenizer_name, estimate_tokens
 from whalepod.endpoints.base import (
     ChatRequest, ChatResponse, Message, StreamingDelta, ToolCallDelta,
 )
@@ -81,8 +87,33 @@ CACHE_BLOCK = 64
 # Measured on OpenRouter -> DeepInfra for deepseek-v4-flash, 2026-08-04, in
 # dollars per prompt token. Cache reads are 20% of a fresh prompt token, which
 # is what makes prefix stability worth engineering for rather than just tidy.
+# Used as a *fallback* only: if a live_acceptance.json is present in results/,
+# its server-reported /models pricing is used instead (see _resolve_prices).
 PRICE_PROMPT = 0.00000009
 PRICE_CACHE_READ = 0.000000018
+PRICES_FROM = "hardcoded 2026-08-04 snapshot"
+
+
+def _resolve_prices() -> tuple[float, float, str]:
+    """Prices for the offline cost columns.
+
+    During a large-scale live run the same numbers are priced from the
+    provider's /models table; to keep the offline and online benches on the same
+    footing, prefer that recorded pricing when it exists, and fall back to the
+    constants above (a snapshot) otherwise. Reduces drift without adding network
+    to the offline bench.
+    """
+    src = RESULTS / "live_acceptance.json"
+    try:
+        if src.is_file():
+            meta = json.loads(src.read_text(encoding="utf-8")).get("meta") or {}
+            p = meta.get("pricing") or {}
+            if p.get("prompt") and p.get("input_cache_read"):
+                return (float(p["prompt"]), float(p["input_cache_read"]),
+                        f"live /models pricing in {src.name}")
+    except (OSError, ValueError):
+        pass
+    return PRICE_PROMPT, PRICE_CACHE_READ, PRICES_FROM
 
 
 # --------------------------------------------------------------- session ---
@@ -206,12 +237,32 @@ def build_script(session: list[Turn]) -> list[object]:
 
 # ------------------------------------------------------ prefix accounting ---
 def wire_text(payload: dict) -> str:
-    """The request as the server's chat template lays it out: tools, then
-    messages, in order. Prefix caching is a property of this byte sequence."""
-    parts = [json.dumps(payload.get("tools") or [], ensure_ascii=False)]
-    for m in payload.get("messages") or []:
-        parts.append(json.dumps(m, ensure_ascii=False))
-    return "\n".join(parts)
+    """The request as the model's chat template lays it out.
+
+    Prefix caching keys on the byte stream the server *fast-tokenizes*, which for
+    DeepSeek V4 is not the JSON payload but its official ``encode_messages``
+    output (BOS + ``<|User|>...`` / ``<|Assistant|>...`` turn delimiters, tool
+    schemas on the system message, tool results merged into user messages). This
+    is computed with the vendored official encoder over the OpenAI-shaped payload
+    that was actually sent, so the reusable-prefix and token counts are measured
+    on the same bytes the server sees — not an ad-hoc JSON dump.
+    """
+    messages = [dict(m) for m in payload.get("messages") or []]
+    tools = payload.get("tools")
+    if tools:
+        # The encoder carries tool schemas on the system/developer message.
+        if messages and messages[0].get("role") == "system":
+            messages[0] = dict(messages[0])
+            messages[0]["tools"] = tools
+        else:
+            messages.insert(0, {"role": "system", "content": "", "tools": tools})
+    return dsv4_encoding.encode_messages(
+        messages,
+        thinking_mode="thinking",
+        drop_thinking=True,          # WhalePod never echoes reasoning upstream
+        add_default_bos_token=True,
+        reasoning_effort="high",     # matches the live bench's default effort
+    )
 
 
 def common_prefix_len(a: str, b: str) -> int:
@@ -237,6 +288,8 @@ class RequestMetrics:
     index: int
     prompt_tokens: int
     reusable_tokens: int
+    p_prompt: float = PRICE_PROMPT
+    p_cache: float = PRICE_CACHE_READ
 
     @property
     def fresh_tokens(self) -> int:
@@ -248,10 +301,11 @@ class RequestMetrics:
 
     @property
     def cost(self) -> float:
-        return self.fresh_tokens * PRICE_PROMPT + self.reusable_tokens * PRICE_CACHE_READ
+        return self.fresh_tokens * self.p_prompt + self.reusable_tokens * self.p_cache
 
 
 def measure(payloads: list[dict]) -> list[RequestMetrics]:
+    p_prompt, p_cache, _ = _resolve_prices()
     out: list[RequestMetrics] = []
     prev = ""
     for i, p in enumerate(payloads):
@@ -260,7 +314,8 @@ def measure(payloads: list[dict]) -> list[RequestMetrics]:
         shared = common_prefix_len(prev, text)
         reusable = blocks(min(estimate_tokens(text[:shared]), total))
         out.append(RequestMetrics(index=i, prompt_tokens=total,
-                                  reusable_tokens=reusable))
+                                  reusable_tokens=reusable,
+                                  p_prompt=p_prompt, p_cache=p_cache))
         prev = text
     return out
 
@@ -858,7 +913,8 @@ def main(argv=None) -> int:
         "root": str(ROOT), "cache_block": CACHE_BLOCK,
         "price_prompt_usd_per_token": PRICE_PROMPT,
         "price_cache_read_usd_per_token": PRICE_CACHE_READ,
-        "tokenizer": "tiktoken" if _has_tiktoken() else "heuristic",
+        "prices_from": _resolve_prices()[2],
+        "tokenizer": active_tokenizer_name(),
         "turns": len(SESSION),
     }}
     sections: list[str] = []

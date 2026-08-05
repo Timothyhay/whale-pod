@@ -43,6 +43,7 @@ import asyncio
 import json
 import os
 import sys
+import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -128,10 +129,15 @@ class RecordingEndpoint(OpenAIChatEndpoint):
         return super()._parse_stream_chunk(chunk)
 
     async def stream_chat(self, req: ChatRequest) -> AsyncIterator[StreamingDelta]:
-        self._current = {"payload": None, "raw_usage": None}
+        self._current = {"payload": None, "raw_usage": None, "t0": None, "t1": None}
         self.records.append(self._current)
-        async for d in super().stream_chat(req):
-            yield d
+        t0 = time.monotonic()
+        self._current["t0"] = t0
+        try:
+            async for d in super().stream_chat(req):
+                yield d
+        finally:
+            self._current["t1"] = time.monotonic()
 
     @property
     def payloads(self) -> list[dict]:
@@ -187,12 +193,15 @@ class LiveRequest:
     prompt_tokens: int = 0
     cached_tokens: int = 0
     cache_write_tokens: int = 0
+    miss_tokens: int = 0
     completion_tokens: int = 0
     reasoning_tokens: int = 0
     cost_usd: Optional[float] = None
     predicted_reusable: int = 0        # offline: our own prefix measurement
     predicted_prompt: int = 0         # offline: our own token estimate
     pruned_before: bool = False
+    idle_s: Optional[float] = None    # wall-clock gap since the previous request
+    duration_s: Optional[float] = None
 
     @property
     def hit_rate(self) -> Optional[float]:
@@ -205,18 +214,31 @@ class LiveRequest:
         return (self.predicted_reusable / self.predicted_prompt
                 if self.predicted_prompt else 0.0)
 
+    @property
+    def accounting_consistent(self) -> bool:
+        """Server's own cache split: hit + miss should reconcile to prompt."""
+        if not self.prompt_tokens:
+            return True
+        return self.cached_tokens + self.miss_tokens == self.prompt_tokens
+
     def as_dict(self) -> dict:
         return {
             "i": self.index, "turn": self.turn,
             "prompt_tokens": self.prompt_tokens,
             "cached_tokens": self.cached_tokens,
             "cache_write_tokens": self.cache_write_tokens,
+            "miss_tokens": self.miss_tokens,
             "completion_tokens": self.completion_tokens,
             "reasoning_tokens": self.reasoning_tokens,
             "hit_rate": round(self.hit_rate, 4) if self.hit_rate is not None else None,
             "predicted_reusable_frac": round(self.predicted_frac, 4),
             "cost_usd": self.cost_usd,
             "pruned_before": self.pruned_before,
+            "idle_s": (round(self.idle_s, 1)
+                       if self.idle_s is not None else None),
+            "duration_s": (round(self.duration_s, 1)
+                           if self.duration_s is not None else None),
+            "accounting_consistent": self.accounting_consistent,
         }
 
 
@@ -362,24 +384,35 @@ async def run_session(label: str, *, index, window: int, turns: int,
 
     # Offline prediction over the same bytes, for the agreement check.
     predicted = validate.measure(endpoint.payloads)
+    prev_end: Optional[float] = None
     for i, rec in enumerate(endpoint.records):
         raw = rec.get("raw_usage") or {}
         pd = raw.get("prompt_tokens_details") or {}
         cd = raw.get("completion_tokens_details") or {}
         cached = int(raw.get("prompt_cache_hit_tokens")
                      or pd.get("cached_tokens") or 0)
+        miss = int(raw.get("prompt_cache_miss_tokens")
+                   or max(0, int(raw.get("prompt_tokens") or 0) - cached)
+                   or 0)
         prompt = int(raw.get("prompt_tokens") or 0)
         completion = int(raw.get("completion_tokens") or 0)
+        t0, t1 = rec.get("t0"), rec.get("t1")
+        idle = (t0 - prev_end) if (t0 is not None and prev_end is not None) else None
+        if t0 is not None:
+            prev_end = t1 if t1 is not None else t0
         req = LiveRequest(
             index=i, turn=turn_of_request.get(i, 0),
             prompt_tokens=prompt, cached_tokens=cached,
             cache_write_tokens=int(pd.get("cache_write_tokens") or 0),
+            miss_tokens=miss,
             completion_tokens=completion,
             reasoning_tokens=int(cd.get("reasoning_tokens") or 0),
             cost_usd=_cost(raw, prompt, cached, completion, pricing),
             predicted_reusable=predicted[i].reusable_tokens if i < len(predicted) else 0,
             predicted_prompt=predicted[i].prompt_tokens if i < len(predicted) else 0,
             pruned_before=(i in prune_marks),
+            idle_s=idle,
+            duration_s=(t1 - t0) if (t0 is not None and t1 is not None) else None,
         )
         run.requests.append(req)
     run.ledger_hits = ledger.hits
@@ -474,15 +507,16 @@ def report_run(run: LiveRun) -> str:
         lines += [""] + [f"!! {e}" for e in run.errors]
     lines += ["", "Per request, as reported by the server:", ""]
     head = (f"{'#':>3} {'turn':>4} {'prompt':>8} {'cached':>8} {'hit':>7} "
-            f"{'predicted':>9} {'reason tok':>10} {'cost $':>9}")
+            f"{'predicted':>9} {'reason tok':>10} {'idle':>7} {'cost $':>9}")
     lines += [head, "-" * len(head)]
     for r in run.requests:
         mark = " <- after prune" if r.pruned_before else ""
         cost = "—" if r.cost_usd is None else f"{r.cost_usd:.6f}"
+        idle = "—" if r.idle_s is None else f"{r.idle_s:.0f}s"
         lines.append(f"{r.index + 1:>3} {r.turn:>4} {r.prompt_tokens:>8,} "
                      f"{r.cached_tokens:>8,} {pct(r.hit_rate):>7} "
                      f"{pct(r.predicted_frac):>9} {r.reasoning_tokens:>10,} "
-                     f"{cost:>9}{mark}")
+                     f"{idle:>7} {cost:>9}{mark}")
     lines += ["", "Measured cache hit rate vs offline-predicted reusable prefix:", ""]
     lines.append(charts.ascii_series(
         {"predicted (offline)": [r.predicted_frac for r in run.requests],
@@ -522,7 +556,43 @@ def report_run(run: LiveRun) -> str:
                      f"{agree * 100:.1f} points")
     for p in run.prunes:
         lines.append(f"prune before request {p['at_request'] + 1}: {p['detail']}")
+    _append_eviction_note(run, lines)
+    _append_consistency_note(run, lines)
     return "\n".join(lines)
+
+
+def _append_eviction_note(run: LiveRun, lines: list[str]) -> None:
+    """Quantify the two plausible causes of a hit-rate collapse:
+    the provider evicting the cache (idle time) vs. our own byte prefix
+    changing (prune). Requests with a short idle gap and no prune that still
+    miss are the provider-side events the offline model cannot predict.
+    """
+    collapses = [r for r in run.requests
+                 if r.hit_rate is not None and r.hit_rate < 0.5
+                 and not r.pruned_before and r.idle_s is not None]
+    if not collapses:
+        return
+    worst = sorted(collapses, key=lambda r: r.idle_s, reverse=True)[0]
+    lines.append(
+        f"hit-rate collapses without a prune: {len(collapses)} request(s), "
+        f"largest idle gap before one: {worst.idle_s:.0f}s "
+        f"(request #{worst.index + 1}, hit {pct(worst.hit_rate)}) "
+        f"— idle time is the observable proxy for provider KV-cache eviction.")
+
+
+def _append_consistency_note(run: LiveRun, lines: list[str]) -> None:
+    """Server accounting should satisfy hit + miss == prompt_tokens. A broken
+    split is worth knowing about: it means our hit-rate column is built on
+    numbers the provider itself does not reconcile.
+    """
+    bad = [r for r in run.requests if not r.accounting_consistent]
+    if not bad:
+        return
+    lines.append(
+        f"server cache split inconsistent (hit+miss != prompt): "
+        f"{len(bad)} request(s), e.g. request #{bad[0].index + 1} "
+        f"prompt={bad[0].prompt_tokens} hit={bad[0].cached_tokens} "
+        f"miss={bad[0].miss_tokens}")
 
 
 def _early_late(run: LiveRun):
@@ -538,6 +608,79 @@ def _agreement(run: LiveRun) -> Optional[float]:
     if not pairs:
         return None
     return sum(abs(p - m) for p, m in pairs) / len(pairs)
+
+
+def _summarize(vals: list[float]) -> Optional[dict]:
+    """Median / P10 / P90 of a list, or None when empty."""
+    if not vals:
+        return None
+    s = sorted(vals)
+    return {name: round(s[int(round(p * (len(s) - 1)))], 4)
+            for name, p in {"p10": 0.10, "median": 0.50, "p90": 0.90}.items()}
+
+
+def aggregate_runs(runs: list[LiveRun]) -> dict:
+    """Collapse repeated live sessions into per-request and session aggregates.
+
+    A single 29-request session is a point sample of the provider's cache
+    state; running it N times and reporting median/P10/P90 turns "we hit 88%"
+    into a distribution. Shared prefix bytes are deterministic, so any spread is
+    server-side (eviction, load) rather than our context layout.
+    """
+    by_index: dict[int, list[float]] = {}
+    hit_rates: list[float] = []
+    costs: list[float] = []
+    prompt_costs: list[float] = []
+    prompt_costs_unc: list[float] = []
+    for run in runs:
+        if not run.requests:
+            continue
+        hit_rates.append(run.hit_rate)
+        costs.append(run.cost)
+        if run.prompt_cost is not None:
+            prompt_costs.append(run.prompt_cost)
+        if run.prompt_cost_uncached is not None:
+            prompt_costs_unc.append(run.prompt_cost_uncached)
+        for r in run.requests:
+            if r.hit_rate is not None:
+                by_index.setdefault(r.index, []).append(r.hit_rate)
+    return {
+        "sessions": len(runs),
+        "session_hit_rate": _summarize(hit_rates),
+        "session_cost_usd": _summarize(costs),
+        "session_prompt_cost_usd": _summarize(prompt_costs),
+        "session_prompt_cost_uncached_usd": _summarize(prompt_costs_unc),
+        "per_request": [
+            {"request": i + 1, "n": len(by_index[i]), **_summarize(by_index[i])}
+            for i in sorted(by_index)
+        ],
+    }
+
+
+def report_aggregate(data: dict) -> str:
+    lines = [f"### Aggregate over {data['sessions']} repeated sessions", ""]
+    def row(name, keys, fmt):
+        d = data.get(keys)
+        if d is None:
+            return None
+        return f"{name:<28} p10={fmt(d['p10'])}  med={fmt(d['median'])}  p90={fmt(d['p90'])}"
+    for line in filter(None, [
+            row("session hit rate", "session_hit_rate",
+                lambda v: f"{v * 100:.1f}%"),
+            row("session prompt cost $", "session_prompt_cost_usd",
+                lambda v: f"${v:.4f}"),
+            row("session prompt cost, uncached $",
+                "session_prompt_cost_uncached_usd", lambda v: f"${v:.4f}"),
+            row("session total billed $", "session_cost_usd",
+                lambda v: f"${v:.4f}"),
+    ]):
+        lines.append(line)
+    lines += ["", "Per-request hit rate across runs (server-measured):", ""]
+    lines.append(charts.ascii_bars(
+        [(f"req {p['request']}", (p.get("median") or 0.0) * 100)
+         for p in data["per_request"]],
+        fmt=lambda v: f"{v:.0f}%", vmax=100.0))
+    return "\n".join(lines)
 
 
 def report_pin(data: dict) -> str:
@@ -619,6 +762,9 @@ def main(argv=None) -> int:
     ap.add_argument("--no-pin", action="store_true",
                     help="run unpinned (expected to destroy the hit rate)")
     ap.add_argument("--turns", type=int, default=len(validate.SESSION))
+    ap.add_argument("--repeat", type=int, default=1,
+                    help="run each session this many times and report "
+                         "median/P10/P90 (recommended for large-scale runs)")
     ap.add_argument("--window", type=int, default=1_000_000)
     ap.add_argument("--effort", default="high", choices=["low", "medium", "high"])
     ap.add_argument("--timeout", type=float, default=180.0)
@@ -635,14 +781,22 @@ def main(argv=None) -> int:
     sections: list[str] = []
 
     if "main" in want:
-        print(f"== live session, window {args.window:,} ==")
-        run = asyncio.run(run_session(
-            f"Live session ({args.turns} turns, window {args.window:,})",
-            index=index, window=args.window, turns=args.turns,
-            model=args.model, base_url=args.base_url, provider=provider,
-            effort=args.effort, timeout=args.timeout, pricing=pricing))
-        out["main"], out["_main"] = run.as_dict(), run
-        sections.append(report_run(run))
+        print(f"== live session, window {args.window:,} x{args.repeat} ==")
+        runs: list[LiveRun] = []
+        for rep in range(max(1, args.repeat)):
+            print(f"  ── repetition {rep + 1}/{max(1, args.repeat)}")
+            run = asyncio.run(run_session(
+                f"Live session ({args.turns} turns, window {args.window:,})",
+                index=index, window=args.window, turns=args.turns,
+                model=args.model, base_url=args.base_url, provider=provider,
+                effort=args.effort, timeout=args.timeout, pricing=pricing))
+            runs.append(run)
+            if rep == 0:
+                out["main"], out["_main"] = run.as_dict(), run
+                sections.append(report_run(run))
+        if len(runs) > 1:
+            out["main_aggregate"] = aggregate_runs(runs)
+            sections.append(report_aggregate(out["main_aggregate"]))
 
     if "prune" in want:
         # Sized from our own estimate of this session's peak, in the same units
@@ -653,14 +807,22 @@ def main(argv=None) -> int:
         if not peak:
             peak = _offline_peak(index)
         window = validate.prune_forcing_window(index, peak)
-        print(f"== live session, window forced to {window:,} (must prune) ==")
-        run = asyncio.run(run_session(
-            f"Live session at a {window:,}-token window (pruning forced)",
-            index=index, window=window, turns=args.turns, model=args.model,
-            base_url=args.base_url, provider=provider, effort=args.effort,
-            timeout=args.timeout, pricing=pricing))
-        out["prune"], out["_prune"] = run.as_dict(), run
-        sections.append(report_run(run))
+        print(f"== live session, window forced to {window:,} x{args.repeat} ==")
+        prune_runs: list[LiveRun] = []
+        for rep in range(max(1, args.repeat)):
+            print(f"  ── repetition {rep + 1}/{max(1, args.repeat)}")
+            run = asyncio.run(run_session(
+                f"Live session at a {window:,}-token window (pruning forced)",
+                index=index, window=window, turns=args.turns, model=args.model,
+                base_url=args.base_url, provider=provider, effort=args.effort,
+                timeout=args.timeout, pricing=pricing))
+            prune_runs.append(run)
+            if rep == 0:
+                out["prune"], out["_prune"] = run.as_dict(), run
+                sections.append(report_run(run))
+        if len(prune_runs) > 1:
+            out["prune_aggregate"] = aggregate_runs(prune_runs)
+            sections.append(report_aggregate(out["prune_aggregate"]))
 
     if "pin-check" in want and args.provider:
         print("== provider affinity A/B ==")

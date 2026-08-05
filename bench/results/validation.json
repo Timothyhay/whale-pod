@@ -1,10 +1,11 @@
 {
   "meta": {
-    "root": "X:\\ProgramProjects\\WhalePod",
+    "root": "D:\\Project\\whale-pod",
     "cache_block": 64,
     "price_prompt_usd_per_token": 9e-08,
     "price_cache_read_usd_per_token": 1.8e-08,
-    "tokenizer": "heuristic",
+    "prices_from": "live /models pricing in live_acceptance.json",
+    "tokenizer": "deepseek-v4 (tokenizer.json)",
     "turns": 12
   },
   "variants": {
@@ -15,172 +16,172 @@
         "name": "as-built",
         "note": "two zones, append-only, ledger on",
         "requests": 26,
-        "prompt_tokens": 1027163,
-        "reusable_tokens": 966336,
-        "fresh_tokens": 60827,
-        "reusable_frac": 0.9408,
-        "prompt_cost_usd": 0.022868,
+        "prompt_tokens": 911083,
+        "reusable_tokens": 858240,
+        "fresh_tokens": 52843,
+        "reusable_frac": 0.942,
+        "prompt_cost_usd": 0.020204,
         "ledger_hits": 4,
-        "ledger_saved_tokens": 13762,
+        "ledger_saved_tokens": 17441,
         "prunes": 0,
         "summaries": 0,
-        "final_context_tokens": 57604,
+        "final_context_tokens": 51544,
         "per_request": [
           {
             "i": 0,
-            "prompt_tokens": 16816,
+            "prompt_tokens": 15259,
             "reusable_tokens": 0,
             "reusable_frac": 0.0
           },
           {
             "i": 1,
-            "prompt_tokens": 17132,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9788
+            "prompt_tokens": 15600,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9764
           },
           {
             "i": 2,
-            "prompt_tokens": 22360,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.7642
+            "prompt_tokens": 20846,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.746
           },
           {
             "i": 3,
-            "prompt_tokens": 22434,
-            "reusable_tokens": 22336,
+            "prompt_tokens": 20892,
+            "reusable_tokens": 20800,
             "reusable_frac": 0.9956
           },
           {
             "i": 4,
-            "prompt_tokens": 24597,
-            "reusable_tokens": 22400,
-            "reusable_frac": 0.9107
+            "prompt_tokens": 22727,
+            "reusable_tokens": 20864,
+            "reusable_frac": 0.918
           },
           {
             "i": 5,
-            "prompt_tokens": 24657,
-            "reusable_tokens": 24576,
-            "reusable_frac": 0.9967
+            "prompt_tokens": 22766,
+            "reusable_tokens": 22720,
+            "reusable_frac": 0.998
           },
           {
             "i": 6,
-            "prompt_tokens": 31511,
-            "reusable_tokens": 24640,
-            "reusable_frac": 0.7819
+            "prompt_tokens": 28416,
+            "reusable_tokens": 22720,
+            "reusable_frac": 0.7995
           },
           {
             "i": 7,
-            "prompt_tokens": 31571,
-            "reusable_tokens": 31488,
-            "reusable_frac": 0.9974
+            "prompt_tokens": 28449,
+            "reusable_tokens": 28416,
+            "reusable_frac": 0.9988
           },
           {
             "i": 8,
-            "prompt_tokens": 31707,
-            "reusable_tokens": 31552,
-            "reusable_frac": 0.9951
+            "prompt_tokens": 28558,
+            "reusable_tokens": 28416,
+            "reusable_frac": 0.995
           },
           {
             "i": 9,
-            "prompt_tokens": 31760,
-            "reusable_tokens": 31680,
-            "reusable_frac": 0.9975
-          },
-          {
-            "i": 10,
-            "prompt_tokens": 35697,
-            "reusable_tokens": 31744,
-            "reusable_frac": 0.8893
-          },
-          {
-            "i": 11,
-            "prompt_tokens": 35746,
-            "reusable_tokens": 35648,
-            "reusable_frac": 0.9973
-          },
-          {
-            "i": 12,
-            "prompt_tokens": 40659,
-            "reusable_tokens": 35712,
-            "reusable_frac": 0.8783
-          },
-          {
-            "i": 13,
-            "prompt_tokens": 40714,
-            "reusable_tokens": 40640,
-            "reusable_frac": 0.9982
-          },
-          {
-            "i": 14,
-            "prompt_tokens": 40848,
-            "reusable_tokens": 40704,
-            "reusable_frac": 0.9965
-          },
-          {
-            "i": 15,
-            "prompt_tokens": 40900,
-            "reusable_tokens": 40832,
+            "prompt_tokens": 28592,
+            "reusable_tokens": 28544,
             "reusable_frac": 0.9983
           },
           {
+            "i": 10,
+            "prompt_tokens": 32696,
+            "reusable_tokens": 28544,
+            "reusable_frac": 0.873
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 32722,
+            "reusable_tokens": 32640,
+            "reusable_frac": 0.9975
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 36626,
+            "reusable_tokens": 32704,
+            "reusable_frac": 0.8929
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 36654,
+            "reusable_tokens": 36608,
+            "reusable_frac": 0.9987
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 36763,
+            "reusable_tokens": 36608,
+            "reusable_frac": 0.9958
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 36788,
+            "reusable_tokens": 36736,
+            "reusable_frac": 0.9986
+          },
+          {
             "i": 16,
-            "prompt_tokens": 48070,
-            "reusable_tokens": 40896,
-            "reusable_frac": 0.8508
+            "prompt_tokens": 42014,
+            "reusable_tokens": 36736,
+            "reusable_frac": 0.8744
           },
           {
             "i": 17,
-            "prompt_tokens": 48125,
-            "reusable_tokens": 48064,
-            "reusable_frac": 0.9987
+            "prompt_tokens": 42043,
+            "reusable_tokens": 41984,
+            "reusable_frac": 0.9986
           },
           {
             "i": 18,
-            "prompt_tokens": 48260,
-            "reusable_tokens": 48064,
-            "reusable_frac": 0.9959
+            "prompt_tokens": 42154,
+            "reusable_tokens": 41984,
+            "reusable_frac": 0.996
           },
           {
             "i": 19,
-            "prompt_tokens": 48307,
-            "reusable_tokens": 48256,
-            "reusable_frac": 0.9989
+            "prompt_tokens": 42179,
+            "reusable_tokens": 42112,
+            "reusable_frac": 0.9984
           },
           {
             "i": 20,
-            "prompt_tokens": 56160,
-            "reusable_tokens": 48256,
-            "reusable_frac": 0.8593
+            "prompt_tokens": 48522,
+            "reusable_tokens": 42176,
+            "reusable_frac": 0.8692
           },
           {
             "i": 21,
-            "prompt_tokens": 56212,
-            "reusable_tokens": 56128,
-            "reusable_frac": 0.9985
+            "prompt_tokens": 48545,
+            "reusable_tokens": 48512,
+            "reusable_frac": 0.9993
           },
           {
             "i": 22,
-            "prompt_tokens": 56349,
-            "reusable_tokens": 56192,
-            "reusable_frac": 0.9972
+            "prompt_tokens": 48656,
+            "reusable_tokens": 48512,
+            "reusable_frac": 0.997
           },
           {
             "i": 23,
-            "prompt_tokens": 56395,
-            "reusable_tokens": 56320,
-            "reusable_frac": 0.9987
+            "prompt_tokens": 48678,
+            "reusable_tokens": 48640,
+            "reusable_frac": 0.9992
           },
           {
             "i": 24,
-            "prompt_tokens": 59980,
-            "reusable_tokens": 56384,
-            "reusable_frac": 0.94
+            "prompt_tokens": 51861,
+            "reusable_tokens": 48640,
+            "reusable_frac": 0.9379
           },
           {
             "i": 25,
-            "prompt_tokens": 60196,
-            "reusable_tokens": 59968,
-            "reusable_frac": 0.9962
+            "prompt_tokens": 52077,
+            "reusable_tokens": 51840,
+            "reusable_frac": 0.9954
           }
         ]
       },
@@ -188,172 +189,172 @@
         "name": "no-ledger",
         "note": "same layout, duplicate reads re-shipped",
         "requests": 26,
-        "prompt_tokens": 1230881,
-        "reusable_tokens": 1152192,
-        "fresh_tokens": 78689,
-        "reusable_frac": 0.9361,
-        "prompt_cost_usd": 0.027821,
+        "prompt_tokens": 1099805,
+        "reusable_tokens": 1030528,
+        "fresh_tokens": 69277,
+        "reusable_frac": 0.937,
+        "prompt_cost_usd": 0.024784,
         "ledger_hits": 0,
         "ledger_saved_tokens": 0,
         "prunes": 0,
         "summaries": 0,
-        "final_context_tokens": 74609,
+        "final_context_tokens": 67935,
         "per_request": [
           {
             "i": 0,
-            "prompt_tokens": 16816,
+            "prompt_tokens": 15259,
             "reusable_tokens": 0,
             "reusable_frac": 0.0
           },
           {
             "i": 1,
-            "prompt_tokens": 17132,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9788
+            "prompt_tokens": 15600,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9764
           },
           {
             "i": 2,
-            "prompt_tokens": 22360,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.7642
+            "prompt_tokens": 20846,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.746
           },
           {
             "i": 3,
-            "prompt_tokens": 22434,
-            "reusable_tokens": 22336,
+            "prompt_tokens": 20892,
+            "reusable_tokens": 20800,
             "reusable_frac": 0.9956
           },
           {
             "i": 4,
-            "prompt_tokens": 24597,
-            "reusable_tokens": 22400,
-            "reusable_frac": 0.9107
+            "prompt_tokens": 22727,
+            "reusable_tokens": 20864,
+            "reusable_frac": 0.918
           },
           {
             "i": 5,
-            "prompt_tokens": 24657,
-            "reusable_tokens": 24576,
-            "reusable_frac": 0.9967
-          },
-          {
-            "i": 6,
-            "prompt_tokens": 31511,
-            "reusable_tokens": 24640,
-            "reusable_frac": 0.7819
-          },
-          {
-            "i": 7,
-            "prompt_tokens": 31571,
-            "reusable_tokens": 31488,
-            "reusable_frac": 0.9974
-          },
-          {
-            "i": 8,
-            "prompt_tokens": 36799,
-            "reusable_tokens": 31552,
-            "reusable_frac": 0.8574
-          },
-          {
-            "i": 9,
-            "prompt_tokens": 36852,
-            "reusable_tokens": 36736,
-            "reusable_frac": 0.9969
-          },
-          {
-            "i": 10,
-            "prompt_tokens": 40789,
-            "reusable_tokens": 36800,
-            "reusable_frac": 0.9022
-          },
-          {
-            "i": 11,
-            "prompt_tokens": 40838,
-            "reusable_tokens": 40768,
-            "reusable_frac": 0.9983
-          },
-          {
-            "i": 12,
-            "prompt_tokens": 45751,
-            "reusable_tokens": 40832,
-            "reusable_frac": 0.8925
-          },
-          {
-            "i": 13,
-            "prompt_tokens": 45805,
-            "reusable_tokens": 45696,
-            "reusable_frac": 0.9976
-          },
-          {
-            "i": 14,
-            "prompt_tokens": 52660,
-            "reusable_tokens": 45760,
-            "reusable_frac": 0.869
-          },
-          {
-            "i": 15,
-            "prompt_tokens": 52712,
-            "reusable_tokens": 52608,
+            "prompt_tokens": 22766,
+            "reusable_tokens": 22720,
             "reusable_frac": 0.998
           },
           {
-            "i": 16,
-            "prompt_tokens": 59882,
-            "reusable_tokens": 52672,
+            "i": 6,
+            "prompt_tokens": 28416,
+            "reusable_tokens": 22720,
+            "reusable_frac": 0.7995
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 28449,
+            "reusable_tokens": 28416,
+            "reusable_frac": 0.9988
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 33695,
+            "reusable_tokens": 28416,
+            "reusable_frac": 0.8433
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 33729,
+            "reusable_tokens": 33664,
+            "reusable_frac": 0.9981
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 37833,
+            "reusable_tokens": 33728,
+            "reusable_frac": 0.8915
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 37859,
+            "reusable_tokens": 37824,
+            "reusable_frac": 0.9991
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 41763,
+            "reusable_tokens": 37824,
+            "reusable_frac": 0.9057
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 41791,
+            "reusable_tokens": 41728,
+            "reusable_frac": 0.9985
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 47441,
+            "reusable_tokens": 41728,
             "reusable_frac": 0.8796
           },
           {
+            "i": 15,
+            "prompt_tokens": 47466,
+            "reusable_tokens": 47424,
+            "reusable_frac": 0.9991
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 52692,
+            "reusable_tokens": 47424,
+            "reusable_frac": 0.9
+          },
+          {
             "i": 17,
-            "prompt_tokens": 59937,
-            "reusable_tokens": 59840,
-            "reusable_frac": 0.9984
+            "prompt_tokens": 52721,
+            "reusable_tokens": 52672,
+            "reusable_frac": 0.9991
           },
           {
             "i": 18,
-            "prompt_tokens": 62100,
-            "reusable_tokens": 59904,
-            "reusable_frac": 0.9646
+            "prompt_tokens": 54556,
+            "reusable_tokens": 52672,
+            "reusable_frac": 0.9655
           },
           {
             "i": 19,
-            "prompt_tokens": 62147,
-            "reusable_tokens": 62080,
-            "reusable_frac": 0.9989
+            "prompt_tokens": 54581,
+            "reusable_tokens": 54528,
+            "reusable_frac": 0.999
           },
           {
             "i": 20,
-            "prompt_tokens": 70000,
-            "reusable_tokens": 62144,
-            "reusable_frac": 0.8878
+            "prompt_tokens": 60924,
+            "reusable_tokens": 54528,
+            "reusable_frac": 0.895
           },
           {
             "i": 21,
-            "prompt_tokens": 70052,
-            "reusable_tokens": 69952,
+            "prompt_tokens": 60947,
+            "reusable_tokens": 60864,
             "reusable_frac": 0.9986
           },
           {
             "i": 22,
-            "prompt_tokens": 73989,
-            "reusable_tokens": 70016,
-            "reusable_frac": 0.9463
+            "prompt_tokens": 65051,
+            "reusable_tokens": 60928,
+            "reusable_frac": 0.9366
           },
           {
             "i": 23,
-            "prompt_tokens": 74035,
-            "reusable_tokens": 73984,
-            "reusable_frac": 0.9993
+            "prompt_tokens": 65073,
+            "reusable_tokens": 65024,
+            "reusable_frac": 0.9992
           },
           {
             "i": 24,
-            "prompt_tokens": 77619,
-            "reusable_tokens": 73984,
-            "reusable_frac": 0.9532
+            "prompt_tokens": 68256,
+            "reusable_tokens": 65024,
+            "reusable_frac": 0.9526
           },
           {
             "i": 25,
-            "prompt_tokens": 77836,
-            "reusable_tokens": 77568,
-            "reusable_frac": 0.9966
+            "prompt_tokens": 68472,
+            "reusable_tokens": 68224,
+            "reusable_frac": 0.9964
           }
         ]
       },
@@ -361,172 +362,172 @@
         "name": "rolling-summary",
         "note": "history collapsed into a summary every 3 turns",
         "requests": 26,
-        "prompt_tokens": 578765,
-        "reusable_tokens": 517120,
-        "fresh_tokens": 61645,
-        "reusable_frac": 0.8935,
-        "prompt_cost_usd": 0.014856,
+        "prompt_tokens": 518504,
+        "reusable_tokens": 465216,
+        "fresh_tokens": 53288,
+        "reusable_frac": 0.8972,
+        "prompt_cost_usd": 0.01317,
         "ledger_hits": 4,
-        "ledger_saved_tokens": 13762,
+        "ledger_saved_tokens": 17441,
         "prunes": 0,
         "summaries": 3,
-        "final_context_tokens": 28073,
+        "final_context_tokens": 25040,
         "per_request": [
           {
             "i": 0,
-            "prompt_tokens": 16816,
+            "prompt_tokens": 15259,
             "reusable_tokens": 0,
             "reusable_frac": 0.0
           },
           {
             "i": 1,
-            "prompt_tokens": 17132,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9788
+            "prompt_tokens": 15600,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9764
           },
           {
             "i": 2,
-            "prompt_tokens": 22360,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.7642
+            "prompt_tokens": 20846,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.746
           },
           {
             "i": 3,
-            "prompt_tokens": 22434,
-            "reusable_tokens": 22336,
+            "prompt_tokens": 20892,
+            "reusable_tokens": 20800,
             "reusable_frac": 0.9956
           },
           {
             "i": 4,
-            "prompt_tokens": 24597,
-            "reusable_tokens": 22400,
-            "reusable_frac": 0.9107
+            "prompt_tokens": 22727,
+            "reusable_tokens": 20864,
+            "reusable_frac": 0.918
           },
           {
             "i": 5,
-            "prompt_tokens": 24657,
-            "reusable_tokens": 24576,
-            "reusable_frac": 0.9967
+            "prompt_tokens": 22766,
+            "reusable_tokens": 22720,
+            "reusable_frac": 0.998
           },
           {
             "i": 6,
-            "prompt_tokens": 31511,
-            "reusable_tokens": 24640,
-            "reusable_frac": 0.7819
+            "prompt_tokens": 28416,
+            "reusable_tokens": 22720,
+            "reusable_frac": 0.7995
           },
           {
             "i": 7,
-            "prompt_tokens": 17008,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9859
+            "prompt_tokens": 15426,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9874
           },
           {
             "i": 8,
-            "prompt_tokens": 17144,
-            "reusable_tokens": 16960,
-            "reusable_frac": 0.9893
+            "prompt_tokens": 15535,
+            "reusable_tokens": 15424,
+            "reusable_frac": 0.9929
           },
           {
             "i": 9,
-            "prompt_tokens": 17197,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.9937
+            "prompt_tokens": 15569,
+            "reusable_tokens": 15488,
+            "reusable_frac": 0.9948
           },
           {
             "i": 10,
-            "prompt_tokens": 21134,
-            "reusable_tokens": 17152,
-            "reusable_frac": 0.8116
+            "prompt_tokens": 19673,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.7905
           },
           {
             "i": 11,
-            "prompt_tokens": 21183,
-            "reusable_tokens": 21120,
-            "reusable_frac": 0.997
+            "prompt_tokens": 19699,
+            "reusable_tokens": 19648,
+            "reusable_frac": 0.9974
           },
           {
             "i": 12,
-            "prompt_tokens": 26096,
-            "reusable_tokens": 21120,
-            "reusable_frac": 0.8093
+            "prompt_tokens": 23603,
+            "reusable_tokens": 19648,
+            "reusable_frac": 0.8324
           },
           {
             "i": 13,
-            "prompt_tokens": 17017,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9854
+            "prompt_tokens": 15424,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9876
           },
           {
             "i": 14,
-            "prompt_tokens": 17152,
-            "reusable_tokens": 16960,
-            "reusable_frac": 0.9888
+            "prompt_tokens": 15533,
+            "reusable_tokens": 15424,
+            "reusable_frac": 0.993
           },
           {
             "i": 15,
-            "prompt_tokens": 17204,
-            "reusable_tokens": 17152,
-            "reusable_frac": 0.997
-          },
-          {
-            "i": 16,
-            "prompt_tokens": 24373,
-            "reusable_tokens": 17152,
-            "reusable_frac": 0.7037
-          },
-          {
-            "i": 17,
-            "prompt_tokens": 24429,
-            "reusable_tokens": 24320,
+            "prompt_tokens": 15558,
+            "reusable_tokens": 15488,
             "reusable_frac": 0.9955
           },
           {
+            "i": 16,
+            "prompt_tokens": 20784,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.7483
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 20813,
+            "reusable_tokens": 20736,
+            "reusable_frac": 0.9963
+          },
+          {
             "i": 18,
-            "prompt_tokens": 24564,
-            "reusable_tokens": 24384,
-            "reusable_frac": 0.9927
+            "prompt_tokens": 20924,
+            "reusable_tokens": 20800,
+            "reusable_frac": 0.9941
           },
           {
             "i": 19,
-            "prompt_tokens": 17044,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9838
+            "prompt_tokens": 15456,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9855
           },
           {
             "i": 20,
-            "prompt_tokens": 24897,
-            "reusable_tokens": 17024,
-            "reusable_frac": 0.6838
+            "prompt_tokens": 21799,
+            "reusable_tokens": 15424,
+            "reusable_frac": 0.7076
           },
           {
             "i": 21,
-            "prompt_tokens": 24949,
-            "reusable_tokens": 24896,
-            "reusable_frac": 0.9979
+            "prompt_tokens": 21822,
+            "reusable_tokens": 21760,
+            "reusable_frac": 0.9972
           },
           {
             "i": 22,
-            "prompt_tokens": 25086,
-            "reusable_tokens": 24896,
-            "reusable_frac": 0.9924
+            "prompt_tokens": 21933,
+            "reusable_tokens": 21760,
+            "reusable_frac": 0.9921
           },
           {
             "i": 23,
-            "prompt_tokens": 25132,
-            "reusable_tokens": 25024,
-            "reusable_frac": 0.9957
+            "prompt_tokens": 21955,
+            "reusable_tokens": 21888,
+            "reusable_frac": 0.9969
           },
           {
             "i": 24,
-            "prompt_tokens": 28716,
-            "reusable_tokens": 25088,
-            "reusable_frac": 0.8737
+            "prompt_tokens": 25138,
+            "reusable_tokens": 21952,
+            "reusable_frac": 0.8733
           },
           {
             "i": 25,
-            "prompt_tokens": 28933,
-            "reusable_tokens": 28672,
-            "reusable_frac": 0.991
+            "prompt_tokens": 25354,
+            "reusable_tokens": 25088,
+            "reusable_frac": 0.9895
           }
         ]
       },
@@ -534,351 +535,351 @@
         "name": "three-zone",
         "note": "deleted design: volatile working set after history",
         "requests": 26,
-        "prompt_tokens": 1029713,
-        "reusable_tokens": 450560,
-        "fresh_tokens": 579153,
-        "reusable_frac": 0.4376,
-        "prompt_cost_usd": 0.060234,
+        "prompt_tokens": 913223,
+        "reusable_tokens": 405312,
+        "fresh_tokens": 507911,
+        "reusable_frac": 0.4438,
+        "prompt_cost_usd": 0.053008,
         "ledger_hits": 0,
         "ledger_saved_tokens": 0,
         "prunes": 0,
         "summaries": 0,
-        "final_context_tokens": 57622,
+        "final_context_tokens": 51555,
         "per_request": [
           {
             "i": 0,
-            "prompt_tokens": 16816,
+            "prompt_tokens": 15259,
             "reusable_tokens": 0,
             "reusable_frac": 0.0
           },
           {
             "i": 1,
-            "prompt_tokens": 17132,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9788
+            "prompt_tokens": 15600,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9764
           },
           {
             "i": 2,
-            "prompt_tokens": 22407,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.7626
+            "prompt_tokens": 20876,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.745
           },
           {
             "i": 3,
-            "prompt_tokens": 22481,
-            "reusable_tokens": 17216,
-            "reusable_frac": 0.7658
+            "prompt_tokens": 20922,
+            "reusable_tokens": 15616,
+            "reusable_frac": 0.7464
           },
           {
             "i": 4,
-            "prompt_tokens": 24671,
-            "reusable_tokens": 17280,
-            "reusable_frac": 0.7004
+            "prompt_tokens": 22783,
+            "reusable_tokens": 15680,
+            "reusable_frac": 0.6882
           },
           {
             "i": 5,
-            "prompt_tokens": 24731,
-            "reusable_tokens": 17408,
-            "reusable_frac": 0.7039
+            "prompt_tokens": 22822,
+            "reusable_tokens": 15744,
+            "reusable_frac": 0.6899
           },
           {
             "i": 6,
-            "prompt_tokens": 31611,
-            "reusable_tokens": 17472,
-            "reusable_frac": 0.5527
+            "prompt_tokens": 28497,
+            "reusable_tokens": 15808,
+            "reusable_frac": 0.5547
           },
           {
             "i": 7,
-            "prompt_tokens": 31671,
-            "reusable_tokens": 17536,
-            "reusable_frac": 0.5537
+            "prompt_tokens": 28530,
+            "reusable_tokens": 15872,
+            "reusable_frac": 0.5563
           },
           {
             "i": 8,
-            "prompt_tokens": 31774,
-            "reusable_tokens": 17600,
-            "reusable_frac": 0.5539
-          },
-          {
-            "i": 9,
-            "prompt_tokens": 31827,
-            "reusable_tokens": 17728,
+            "prompt_tokens": 28609,
+            "reusable_tokens": 15936,
             "reusable_frac": 0.557
           },
           {
+            "i": 9,
+            "prompt_tokens": 28643,
+            "reusable_tokens": 16000,
+            "reusable_frac": 0.5586
+          },
+          {
             "i": 10,
-            "prompt_tokens": 35793,
-            "reusable_tokens": 17728,
-            "reusable_frac": 0.4953
+            "prompt_tokens": 32773,
+            "reusable_tokens": 16064,
+            "reusable_frac": 0.4902
           },
           {
             "i": 11,
-            "prompt_tokens": 35842,
-            "reusable_tokens": 17856,
-            "reusable_frac": 0.4982
+            "prompt_tokens": 32799,
+            "reusable_tokens": 16128,
+            "reusable_frac": 0.4917
           },
           {
             "i": 12,
-            "prompt_tokens": 40784,
-            "reusable_tokens": 17920,
-            "reusable_frac": 0.4394
+            "prompt_tokens": 36730,
+            "reusable_tokens": 16128,
+            "reusable_frac": 0.4391
           },
           {
             "i": 13,
-            "prompt_tokens": 40838,
-            "reusable_tokens": 18048,
-            "reusable_frac": 0.4419
+            "prompt_tokens": 36758,
+            "reusable_tokens": 16256,
+            "reusable_frac": 0.4422
           },
           {
             "i": 14,
-            "prompt_tokens": 40940,
-            "reusable_tokens": 18048,
-            "reusable_frac": 0.4408
+            "prompt_tokens": 36837,
+            "reusable_tokens": 16256,
+            "reusable_frac": 0.4413
           },
           {
             "i": 15,
-            "prompt_tokens": 40992,
-            "reusable_tokens": 18176,
-            "reusable_frac": 0.4434
+            "prompt_tokens": 36862,
+            "reusable_tokens": 16320,
+            "reusable_frac": 0.4427
           },
           {
             "i": 16,
-            "prompt_tokens": 48222,
-            "reusable_tokens": 18240,
-            "reusable_frac": 0.3783
+            "prompt_tokens": 42148,
+            "reusable_tokens": 16384,
+            "reusable_frac": 0.3887
           },
           {
             "i": 17,
-            "prompt_tokens": 48277,
-            "reusable_tokens": 18432,
-            "reusable_frac": 0.3818
+            "prompt_tokens": 42177,
+            "reusable_tokens": 16512,
+            "reusable_frac": 0.3915
           },
           {
             "i": 18,
-            "prompt_tokens": 48379,
-            "reusable_tokens": 18496,
-            "reusable_frac": 0.3823
+            "prompt_tokens": 42258,
+            "reusable_tokens": 16512,
+            "reusable_frac": 0.3907
           },
           {
             "i": 19,
-            "prompt_tokens": 48426,
-            "reusable_tokens": 18560,
-            "reusable_frac": 0.3833
+            "prompt_tokens": 42283,
+            "reusable_tokens": 16640,
+            "reusable_frac": 0.3935
           },
           {
             "i": 20,
-            "prompt_tokens": 56309,
-            "reusable_tokens": 18624,
-            "reusable_frac": 0.3307
+            "prompt_tokens": 48655,
+            "reusable_tokens": 16640,
+            "reusable_frac": 0.342
           },
           {
             "i": 21,
-            "prompt_tokens": 56361,
-            "reusable_tokens": 18752,
-            "reusable_frac": 0.3327
+            "prompt_tokens": 48678,
+            "reusable_tokens": 16704,
+            "reusable_frac": 0.3432
           },
           {
             "i": 22,
-            "prompt_tokens": 56465,
-            "reusable_tokens": 18752,
-            "reusable_frac": 0.3321
+            "prompt_tokens": 48759,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.3439
           },
           {
             "i": 23,
-            "prompt_tokens": 56510,
-            "reusable_tokens": 18880,
-            "reusable_frac": 0.3341
+            "prompt_tokens": 48781,
+            "reusable_tokens": 16832,
+            "reusable_frac": 0.3451
           },
           {
             "i": 24,
-            "prompt_tokens": 60119,
-            "reusable_tokens": 18944,
-            "reusable_frac": 0.3151
+            "prompt_tokens": 51984,
+            "reusable_tokens": 16832,
+            "reusable_frac": 0.3238
           },
           {
             "i": 25,
-            "prompt_tokens": 60335,
-            "reusable_tokens": 19008,
-            "reusable_frac": 0.315
+            "prompt_tokens": 52200,
+            "reusable_tokens": 16896,
+            "reusable_frac": 0.3237
           }
         ]
       }
     ]
   },
   "variants_small": {
-    "window": 52000,
-    "label": "52,000 window (as-built has to prune)",
+    "window": 45000,
+    "label": "45,000 window (as-built has to prune)",
     "runs": [
       {
         "name": "as-built",
         "note": "two zones, append-only, ledger on",
         "requests": 26,
-        "prompt_tokens": 854724,
-        "reusable_tokens": 789760,
-        "fresh_tokens": 64964,
-        "reusable_frac": 0.924,
-        "prompt_cost_usd": 0.020062,
-        "ledger_hits": 3,
-        "ledger_saved_tokens": 10837,
-        "prunes": 1,
+        "prompt_tokens": 608751,
+        "reusable_tokens": 540352,
+        "fresh_tokens": 68399,
+        "reusable_frac": 0.8876,
+        "prompt_cost_usd": 0.015882,
+        "ledger_hits": 1,
+        "ledger_saved_tokens": 5306,
+        "prunes": 4,
         "summaries": 0,
-        "final_context_tokens": 31606,
+        "final_context_tokens": 22512,
         "per_request": [
           {
             "i": 0,
-            "prompt_tokens": 16816,
+            "prompt_tokens": 15259,
             "reusable_tokens": 0,
             "reusable_frac": 0.0
           },
           {
             "i": 1,
-            "prompt_tokens": 17132,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9788
+            "prompt_tokens": 15600,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9764
           },
           {
             "i": 2,
-            "prompt_tokens": 22360,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.7642
+            "prompt_tokens": 20846,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.746
           },
           {
             "i": 3,
-            "prompt_tokens": 22434,
-            "reusable_tokens": 22336,
+            "prompt_tokens": 20892,
+            "reusable_tokens": 20800,
             "reusable_frac": 0.9956
           },
           {
             "i": 4,
-            "prompt_tokens": 24597,
-            "reusable_tokens": 22400,
-            "reusable_frac": 0.9107
+            "prompt_tokens": 22727,
+            "reusable_tokens": 20864,
+            "reusable_frac": 0.918
           },
           {
             "i": 5,
-            "prompt_tokens": 24657,
-            "reusable_tokens": 24576,
-            "reusable_frac": 0.9967
-          },
-          {
-            "i": 6,
-            "prompt_tokens": 31511,
-            "reusable_tokens": 24640,
-            "reusable_frac": 0.7819
-          },
-          {
-            "i": 7,
-            "prompt_tokens": 31571,
-            "reusable_tokens": 31488,
-            "reusable_frac": 0.9974
-          },
-          {
-            "i": 8,
-            "prompt_tokens": 31707,
-            "reusable_tokens": 31552,
-            "reusable_frac": 0.9951
-          },
-          {
-            "i": 9,
-            "prompt_tokens": 31760,
-            "reusable_tokens": 31680,
-            "reusable_frac": 0.9975
-          },
-          {
-            "i": 10,
-            "prompt_tokens": 35697,
-            "reusable_tokens": 31744,
-            "reusable_frac": 0.8893
-          },
-          {
-            "i": 11,
-            "prompt_tokens": 35746,
-            "reusable_tokens": 35648,
-            "reusable_frac": 0.9973
-          },
-          {
-            "i": 12,
-            "prompt_tokens": 40659,
-            "reusable_tokens": 35712,
-            "reusable_frac": 0.8783
-          },
-          {
-            "i": 13,
-            "prompt_tokens": 40714,
-            "reusable_tokens": 40640,
-            "reusable_frac": 0.9982
-          },
-          {
-            "i": 14,
-            "prompt_tokens": 40848,
-            "reusable_tokens": 40704,
-            "reusable_frac": 0.9965
-          },
-          {
-            "i": 15,
-            "prompt_tokens": 40900,
-            "reusable_tokens": 40832,
-            "reusable_frac": 0.9983
-          },
-          {
-            "i": 16,
-            "prompt_tokens": 48070,
-            "reusable_tokens": 40896,
-            "reusable_frac": 0.8508
-          },
-          {
-            "i": 17,
-            "prompt_tokens": 48125,
-            "reusable_tokens": 48064,
-            "reusable_frac": 0.9987
-          },
-          {
-            "i": 18,
-            "prompt_tokens": 48260,
-            "reusable_tokens": 48064,
-            "reusable_frac": 0.9959
-          },
-          {
-            "i": 19,
-            "prompt_tokens": 48307,
-            "reusable_tokens": 48256,
-            "reusable_frac": 0.9989
-          },
-          {
-            "i": 20,
-            "prompt_tokens": 24887,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.6738
-          },
-          {
-            "i": 21,
-            "prompt_tokens": 24939,
-            "reusable_tokens": 24832,
-            "reusable_frac": 0.9957
-          },
-          {
-            "i": 22,
-            "prompt_tokens": 28876,
-            "reusable_tokens": 24896,
-            "reusable_frac": 0.8622
-          },
-          {
-            "i": 23,
-            "prompt_tokens": 28922,
-            "reusable_tokens": 28864,
+            "prompt_tokens": 22766,
+            "reusable_tokens": 22720,
             "reusable_frac": 0.998
           },
           {
+            "i": 6,
+            "prompt_tokens": 28416,
+            "reusable_tokens": 22720,
+            "reusable_frac": 0.7995
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 28449,
+            "reusable_tokens": 28416,
+            "reusable_frac": 0.9988
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 28558,
+            "reusable_tokens": 28416,
+            "reusable_frac": 0.995
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 28592,
+            "reusable_tokens": 28544,
+            "reusable_frac": 0.9983
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 19532,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.7798
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 19558,
+            "reusable_tokens": 19520,
+            "reusable_frac": 0.9981
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 23462,
+            "reusable_tokens": 19520,
+            "reusable_frac": 0.832
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 23490,
+            "reusable_tokens": 23424,
+            "reusable_frac": 0.9972
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 20934,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.7276
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 20959,
+            "reusable_tokens": 20928,
+            "reusable_frac": 0.9985
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 26185,
+            "reusable_tokens": 20928,
+            "reusable_frac": 0.7992
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 26214,
+            "reusable_tokens": 26176,
+            "reusable_frac": 0.9986
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 28049,
+            "reusable_tokens": 26176,
+            "reusable_frac": 0.9332
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 28074,
+            "reusable_tokens": 28032,
+            "reusable_frac": 0.9985
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 21624,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.7044
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 21647,
+            "reusable_tokens": 21568,
+            "reusable_frac": 0.9964
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 25751,
+            "reusable_tokens": 21632,
+            "reusable_frac": 0.84
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 25773,
+            "reusable_tokens": 25728,
+            "reusable_frac": 0.9983
+          },
+          {
             "i": 24,
-            "prompt_tokens": 32506,
-            "reusable_tokens": 28864,
-            "reusable_frac": 0.888
+            "prompt_tokens": 22589,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.6743
           },
           {
             "i": 25,
-            "prompt_tokens": 32723,
-            "reusable_tokens": 32448,
-            "reusable_frac": 0.9916
+            "prompt_tokens": 22805,
+            "reusable_tokens": 22528,
+            "reusable_frac": 0.9879
           }
         ]
       },
@@ -886,172 +887,172 @@
         "name": "no-ledger",
         "note": "same layout, duplicate reads re-shipped",
         "requests": 26,
-        "prompt_tokens": 834940,
-        "reusable_tokens": 752256,
-        "fresh_tokens": 82684,
-        "reusable_frac": 0.901,
-        "prompt_cost_usd": 0.020982,
+        "prompt_tokens": 613245,
+        "reusable_tokens": 539776,
+        "fresh_tokens": 73469,
+        "reusable_frac": 0.8802,
+        "prompt_cost_usd": 0.016328,
         "ledger_hits": 0,
         "ledger_saved_tokens": 0,
-        "prunes": 2,
+        "prunes": 4,
         "summaries": 0,
-        "final_context_tokens": 23944,
+        "final_context_tokens": 22512,
         "per_request": [
           {
             "i": 0,
-            "prompt_tokens": 16816,
+            "prompt_tokens": 15259,
             "reusable_tokens": 0,
             "reusable_frac": 0.0
           },
           {
             "i": 1,
-            "prompt_tokens": 17132,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9788
+            "prompt_tokens": 15600,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9764
           },
           {
             "i": 2,
-            "prompt_tokens": 22360,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.7642
+            "prompt_tokens": 20846,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.746
           },
           {
             "i": 3,
-            "prompt_tokens": 22434,
-            "reusable_tokens": 22336,
+            "prompt_tokens": 20892,
+            "reusable_tokens": 20800,
             "reusable_frac": 0.9956
           },
           {
             "i": 4,
-            "prompt_tokens": 24597,
-            "reusable_tokens": 22400,
-            "reusable_frac": 0.9107
+            "prompt_tokens": 22727,
+            "reusable_tokens": 20864,
+            "reusable_frac": 0.918
           },
           {
             "i": 5,
-            "prompt_tokens": 24657,
-            "reusable_tokens": 24576,
-            "reusable_frac": 0.9967
-          },
-          {
-            "i": 6,
-            "prompt_tokens": 31511,
-            "reusable_tokens": 24640,
-            "reusable_frac": 0.7819
-          },
-          {
-            "i": 7,
-            "prompt_tokens": 31571,
-            "reusable_tokens": 31488,
-            "reusable_frac": 0.9974
-          },
-          {
-            "i": 8,
-            "prompt_tokens": 36799,
-            "reusable_tokens": 31552,
-            "reusable_frac": 0.8574
-          },
-          {
-            "i": 9,
-            "prompt_tokens": 36852,
-            "reusable_tokens": 36736,
-            "reusable_frac": 0.9969
-          },
-          {
-            "i": 10,
-            "prompt_tokens": 40789,
-            "reusable_tokens": 36800,
-            "reusable_frac": 0.9022
-          },
-          {
-            "i": 11,
-            "prompt_tokens": 40838,
-            "reusable_tokens": 40768,
-            "reusable_frac": 0.9983
-          },
-          {
-            "i": 12,
-            "prompt_tokens": 45751,
-            "reusable_tokens": 40832,
-            "reusable_frac": 0.8925
-          },
-          {
-            "i": 13,
-            "prompt_tokens": 45805,
-            "reusable_tokens": 45696,
-            "reusable_frac": 0.9976
-          },
-          {
-            "i": 14,
-            "prompt_tokens": 23707,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.7073
-          },
-          {
-            "i": 15,
-            "prompt_tokens": 23759,
-            "reusable_tokens": 23680,
-            "reusable_frac": 0.9967
-          },
-          {
-            "i": 16,
-            "prompt_tokens": 30928,
-            "reusable_tokens": 23744,
-            "reusable_frac": 0.7677
-          },
-          {
-            "i": 17,
-            "prompt_tokens": 30984,
-            "reusable_tokens": 30912,
-            "reusable_frac": 0.9977
-          },
-          {
-            "i": 18,
-            "prompt_tokens": 33147,
-            "reusable_tokens": 30976,
-            "reusable_frac": 0.9345
-          },
-          {
-            "i": 19,
-            "prompt_tokens": 33194,
-            "reusable_tokens": 33088,
-            "reusable_frac": 0.9968
-          },
-          {
-            "i": 20,
-            "prompt_tokens": 41047,
-            "reusable_tokens": 33152,
-            "reusable_frac": 0.8077
-          },
-          {
-            "i": 21,
-            "prompt_tokens": 41099,
-            "reusable_tokens": 41024,
-            "reusable_frac": 0.9982
-          },
-          {
-            "i": 22,
-            "prompt_tokens": 45035,
-            "reusable_tokens": 41088,
-            "reusable_frac": 0.9124
-          },
-          {
-            "i": 23,
-            "prompt_tokens": 45081,
-            "reusable_tokens": 44992,
+            "prompt_tokens": 22766,
+            "reusable_tokens": 22720,
             "reusable_frac": 0.998
           },
           {
+            "i": 6,
+            "prompt_tokens": 28416,
+            "reusable_tokens": 22720,
+            "reusable_frac": 0.7995
+          },
+          {
+            "i": 7,
+            "prompt_tokens": 28449,
+            "reusable_tokens": 28416,
+            "reusable_frac": 0.9988
+          },
+          {
+            "i": 8,
+            "prompt_tokens": 20531,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.7419
+          },
+          {
+            "i": 9,
+            "prompt_tokens": 20565,
+            "reusable_tokens": 20480,
+            "reusable_frac": 0.9959
+          },
+          {
+            "i": 10,
+            "prompt_tokens": 24669,
+            "reusable_tokens": 20544,
+            "reusable_frac": 0.8328
+          },
+          {
+            "i": 11,
+            "prompt_tokens": 24695,
+            "reusable_tokens": 24640,
+            "reusable_frac": 0.9978
+          },
+          {
+            "i": 12,
+            "prompt_tokens": 28599,
+            "reusable_tokens": 24640,
+            "reusable_frac": 0.8616
+          },
+          {
+            "i": 13,
+            "prompt_tokens": 28627,
+            "reusable_tokens": 28544,
+            "reusable_frac": 0.9971
+          },
+          {
+            "i": 14,
+            "prompt_tokens": 20934,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.7276
+          },
+          {
+            "i": 15,
+            "prompt_tokens": 20959,
+            "reusable_tokens": 20928,
+            "reusable_frac": 0.9985
+          },
+          {
+            "i": 16,
+            "prompt_tokens": 26185,
+            "reusable_tokens": 20928,
+            "reusable_frac": 0.7992
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 26214,
+            "reusable_tokens": 26176,
+            "reusable_frac": 0.9986
+          },
+          {
+            "i": 18,
+            "prompt_tokens": 28049,
+            "reusable_tokens": 26176,
+            "reusable_frac": 0.9332
+          },
+          {
+            "i": 19,
+            "prompt_tokens": 28074,
+            "reusable_tokens": 28032,
+            "reusable_frac": 0.9985
+          },
+          {
+            "i": 20,
+            "prompt_tokens": 21624,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.7044
+          },
+          {
+            "i": 21,
+            "prompt_tokens": 21647,
+            "reusable_tokens": 21568,
+            "reusable_frac": 0.9964
+          },
+          {
+            "i": 22,
+            "prompt_tokens": 25751,
+            "reusable_tokens": 21632,
+            "reusable_frac": 0.84
+          },
+          {
+            "i": 23,
+            "prompt_tokens": 25773,
+            "reusable_tokens": 25728,
+            "reusable_frac": 0.9983
+          },
+          {
             "i": 24,
-            "prompt_tokens": 24415,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.6868
+            "prompt_tokens": 22589,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.6743
           },
           {
             "i": 25,
-            "prompt_tokens": 24632,
-            "reusable_tokens": 24384,
-            "reusable_frac": 0.9899
+            "prompt_tokens": 22805,
+            "reusable_tokens": 22528,
+            "reusable_frac": 0.9879
           }
         ]
       },
@@ -1059,172 +1060,172 @@
         "name": "rolling-summary",
         "note": "history collapsed into a summary every 3 turns",
         "requests": 26,
-        "prompt_tokens": 578765,
-        "reusable_tokens": 517120,
-        "fresh_tokens": 61645,
-        "reusable_frac": 0.8935,
-        "prompt_cost_usd": 0.014856,
+        "prompt_tokens": 518504,
+        "reusable_tokens": 465216,
+        "fresh_tokens": 53288,
+        "reusable_frac": 0.8972,
+        "prompt_cost_usd": 0.01317,
         "ledger_hits": 4,
-        "ledger_saved_tokens": 13762,
+        "ledger_saved_tokens": 17441,
         "prunes": 0,
         "summaries": 3,
-        "final_context_tokens": 28073,
+        "final_context_tokens": 25040,
         "per_request": [
           {
             "i": 0,
-            "prompt_tokens": 16816,
+            "prompt_tokens": 15259,
             "reusable_tokens": 0,
             "reusable_frac": 0.0
           },
           {
             "i": 1,
-            "prompt_tokens": 17132,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9788
+            "prompt_tokens": 15600,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9764
           },
           {
             "i": 2,
-            "prompt_tokens": 22360,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.7642
+            "prompt_tokens": 20846,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.746
           },
           {
             "i": 3,
-            "prompt_tokens": 22434,
-            "reusable_tokens": 22336,
+            "prompt_tokens": 20892,
+            "reusable_tokens": 20800,
             "reusable_frac": 0.9956
           },
           {
             "i": 4,
-            "prompt_tokens": 24597,
-            "reusable_tokens": 22400,
-            "reusable_frac": 0.9107
+            "prompt_tokens": 22727,
+            "reusable_tokens": 20864,
+            "reusable_frac": 0.918
           },
           {
             "i": 5,
-            "prompt_tokens": 24657,
-            "reusable_tokens": 24576,
-            "reusable_frac": 0.9967
+            "prompt_tokens": 22766,
+            "reusable_tokens": 22720,
+            "reusable_frac": 0.998
           },
           {
             "i": 6,
-            "prompt_tokens": 31511,
-            "reusable_tokens": 24640,
-            "reusable_frac": 0.7819
+            "prompt_tokens": 28416,
+            "reusable_tokens": 22720,
+            "reusable_frac": 0.7995
           },
           {
             "i": 7,
-            "prompt_tokens": 17008,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9859
+            "prompt_tokens": 15426,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9874
           },
           {
             "i": 8,
-            "prompt_tokens": 17144,
-            "reusable_tokens": 16960,
-            "reusable_frac": 0.9893
+            "prompt_tokens": 15535,
+            "reusable_tokens": 15424,
+            "reusable_frac": 0.9929
           },
           {
             "i": 9,
-            "prompt_tokens": 17197,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.9937
+            "prompt_tokens": 15569,
+            "reusable_tokens": 15488,
+            "reusable_frac": 0.9948
           },
           {
             "i": 10,
-            "prompt_tokens": 21134,
-            "reusable_tokens": 17152,
-            "reusable_frac": 0.8116
+            "prompt_tokens": 19673,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.7905
           },
           {
             "i": 11,
-            "prompt_tokens": 21183,
-            "reusable_tokens": 21120,
-            "reusable_frac": 0.997
+            "prompt_tokens": 19699,
+            "reusable_tokens": 19648,
+            "reusable_frac": 0.9974
           },
           {
             "i": 12,
-            "prompt_tokens": 26096,
-            "reusable_tokens": 21120,
-            "reusable_frac": 0.8093
+            "prompt_tokens": 23603,
+            "reusable_tokens": 19648,
+            "reusable_frac": 0.8324
           },
           {
             "i": 13,
-            "prompt_tokens": 17017,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9854
+            "prompt_tokens": 15424,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9876
           },
           {
             "i": 14,
-            "prompt_tokens": 17152,
-            "reusable_tokens": 16960,
-            "reusable_frac": 0.9888
+            "prompt_tokens": 15533,
+            "reusable_tokens": 15424,
+            "reusable_frac": 0.993
           },
           {
             "i": 15,
-            "prompt_tokens": 17204,
-            "reusable_tokens": 17152,
-            "reusable_frac": 0.997
-          },
-          {
-            "i": 16,
-            "prompt_tokens": 24373,
-            "reusable_tokens": 17152,
-            "reusable_frac": 0.7037
-          },
-          {
-            "i": 17,
-            "prompt_tokens": 24429,
-            "reusable_tokens": 24320,
+            "prompt_tokens": 15558,
+            "reusable_tokens": 15488,
             "reusable_frac": 0.9955
           },
           {
+            "i": 16,
+            "prompt_tokens": 20784,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.7483
+          },
+          {
+            "i": 17,
+            "prompt_tokens": 20813,
+            "reusable_tokens": 20736,
+            "reusable_frac": 0.9963
+          },
+          {
             "i": 18,
-            "prompt_tokens": 24564,
-            "reusable_tokens": 24384,
-            "reusable_frac": 0.9927
+            "prompt_tokens": 20924,
+            "reusable_tokens": 20800,
+            "reusable_frac": 0.9941
           },
           {
             "i": 19,
-            "prompt_tokens": 17044,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9838
+            "prompt_tokens": 15456,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9855
           },
           {
             "i": 20,
-            "prompt_tokens": 24897,
-            "reusable_tokens": 17024,
-            "reusable_frac": 0.6838
+            "prompt_tokens": 21799,
+            "reusable_tokens": 15424,
+            "reusable_frac": 0.7076
           },
           {
             "i": 21,
-            "prompt_tokens": 24949,
-            "reusable_tokens": 24896,
-            "reusable_frac": 0.9979
+            "prompt_tokens": 21822,
+            "reusable_tokens": 21760,
+            "reusable_frac": 0.9972
           },
           {
             "i": 22,
-            "prompt_tokens": 25086,
-            "reusable_tokens": 24896,
-            "reusable_frac": 0.9924
+            "prompt_tokens": 21933,
+            "reusable_tokens": 21760,
+            "reusable_frac": 0.9921
           },
           {
             "i": 23,
-            "prompt_tokens": 25132,
-            "reusable_tokens": 25024,
-            "reusable_frac": 0.9957
+            "prompt_tokens": 21955,
+            "reusable_tokens": 21888,
+            "reusable_frac": 0.9969
           },
           {
             "i": 24,
-            "prompt_tokens": 28716,
-            "reusable_tokens": 25088,
-            "reusable_frac": 0.8737
+            "prompt_tokens": 25138,
+            "reusable_tokens": 21952,
+            "reusable_frac": 0.8733
           },
           {
             "i": 25,
-            "prompt_tokens": 28933,
-            "reusable_tokens": 28672,
-            "reusable_frac": 0.991
+            "prompt_tokens": 25354,
+            "reusable_tokens": 25088,
+            "reusable_frac": 0.9895
           }
         ]
       },
@@ -1232,406 +1233,436 @@
         "name": "three-zone",
         "note": "deleted design: volatile working set after history",
         "requests": 26,
-        "prompt_tokens": 1029713,
-        "reusable_tokens": 450560,
-        "fresh_tokens": 579153,
-        "reusable_frac": 0.4376,
-        "prompt_cost_usd": 0.060234,
+        "prompt_tokens": 913223,
+        "reusable_tokens": 405312,
+        "fresh_tokens": 507911,
+        "reusable_frac": 0.4438,
+        "prompt_cost_usd": 0.053008,
         "ledger_hits": 0,
         "ledger_saved_tokens": 0,
         "prunes": 0,
         "summaries": 0,
-        "final_context_tokens": 57622,
+        "final_context_tokens": 51555,
         "per_request": [
           {
             "i": 0,
-            "prompt_tokens": 16816,
+            "prompt_tokens": 15259,
             "reusable_tokens": 0,
             "reusable_frac": 0.0
           },
           {
             "i": 1,
-            "prompt_tokens": 17132,
-            "reusable_tokens": 16768,
-            "reusable_frac": 0.9788
+            "prompt_tokens": 15600,
+            "reusable_tokens": 15232,
+            "reusable_frac": 0.9764
           },
           {
             "i": 2,
-            "prompt_tokens": 22407,
-            "reusable_tokens": 17088,
-            "reusable_frac": 0.7626
+            "prompt_tokens": 20876,
+            "reusable_tokens": 15552,
+            "reusable_frac": 0.745
           },
           {
             "i": 3,
-            "prompt_tokens": 22481,
-            "reusable_tokens": 17216,
-            "reusable_frac": 0.7658
+            "prompt_tokens": 20922,
+            "reusable_tokens": 15616,
+            "reusable_frac": 0.7464
           },
           {
             "i": 4,
-            "prompt_tokens": 24671,
-            "reusable_tokens": 17280,
-            "reusable_frac": 0.7004
+            "prompt_tokens": 22783,
+            "reusable_tokens": 15680,
+            "reusable_frac": 0.6882
           },
           {
             "i": 5,
-            "prompt_tokens": 24731,
-            "reusable_tokens": 17408,
-            "reusable_frac": 0.7039
+            "prompt_tokens": 22822,
+            "reusable_tokens": 15744,
+            "reusable_frac": 0.6899
           },
           {
             "i": 6,
-            "prompt_tokens": 31611,
-            "reusable_tokens": 17472,
-            "reusable_frac": 0.5527
+            "prompt_tokens": 28497,
+            "reusable_tokens": 15808,
+            "reusable_frac": 0.5547
           },
           {
             "i": 7,
-            "prompt_tokens": 31671,
-            "reusable_tokens": 17536,
-            "reusable_frac": 0.5537
+            "prompt_tokens": 28530,
+            "reusable_tokens": 15872,
+            "reusable_frac": 0.5563
           },
           {
             "i": 8,
-            "prompt_tokens": 31774,
-            "reusable_tokens": 17600,
-            "reusable_frac": 0.5539
-          },
-          {
-            "i": 9,
-            "prompt_tokens": 31827,
-            "reusable_tokens": 17728,
+            "prompt_tokens": 28609,
+            "reusable_tokens": 15936,
             "reusable_frac": 0.557
           },
           {
+            "i": 9,
+            "prompt_tokens": 28643,
+            "reusable_tokens": 16000,
+            "reusable_frac": 0.5586
+          },
+          {
             "i": 10,
-            "prompt_tokens": 35793,
-            "reusable_tokens": 17728,
-            "reusable_frac": 0.4953
+            "prompt_tokens": 32773,
+            "reusable_tokens": 16064,
+            "reusable_frac": 0.4902
           },
           {
             "i": 11,
-            "prompt_tokens": 35842,
-            "reusable_tokens": 17856,
-            "reusable_frac": 0.4982
+            "prompt_tokens": 32799,
+            "reusable_tokens": 16128,
+            "reusable_frac": 0.4917
           },
           {
             "i": 12,
-            "prompt_tokens": 40784,
-            "reusable_tokens": 17920,
-            "reusable_frac": 0.4394
+            "prompt_tokens": 36730,
+            "reusable_tokens": 16128,
+            "reusable_frac": 0.4391
           },
           {
             "i": 13,
-            "prompt_tokens": 40838,
-            "reusable_tokens": 18048,
-            "reusable_frac": 0.4419
+            "prompt_tokens": 36758,
+            "reusable_tokens": 16256,
+            "reusable_frac": 0.4422
           },
           {
             "i": 14,
-            "prompt_tokens": 40940,
-            "reusable_tokens": 18048,
-            "reusable_frac": 0.4408
+            "prompt_tokens": 36837,
+            "reusable_tokens": 16256,
+            "reusable_frac": 0.4413
           },
           {
             "i": 15,
-            "prompt_tokens": 40992,
-            "reusable_tokens": 18176,
-            "reusable_frac": 0.4434
+            "prompt_tokens": 36862,
+            "reusable_tokens": 16320,
+            "reusable_frac": 0.4427
           },
           {
             "i": 16,
-            "prompt_tokens": 48222,
-            "reusable_tokens": 18240,
-            "reusable_frac": 0.3783
+            "prompt_tokens": 42148,
+            "reusable_tokens": 16384,
+            "reusable_frac": 0.3887
           },
           {
             "i": 17,
-            "prompt_tokens": 48277,
-            "reusable_tokens": 18432,
-            "reusable_frac": 0.3818
+            "prompt_tokens": 42177,
+            "reusable_tokens": 16512,
+            "reusable_frac": 0.3915
           },
           {
             "i": 18,
-            "prompt_tokens": 48379,
-            "reusable_tokens": 18496,
-            "reusable_frac": 0.3823
+            "prompt_tokens": 42258,
+            "reusable_tokens": 16512,
+            "reusable_frac": 0.3907
           },
           {
             "i": 19,
-            "prompt_tokens": 48426,
-            "reusable_tokens": 18560,
-            "reusable_frac": 0.3833
+            "prompt_tokens": 42283,
+            "reusable_tokens": 16640,
+            "reusable_frac": 0.3935
           },
           {
             "i": 20,
-            "prompt_tokens": 56309,
-            "reusable_tokens": 18624,
-            "reusable_frac": 0.3307
+            "prompt_tokens": 48655,
+            "reusable_tokens": 16640,
+            "reusable_frac": 0.342
           },
           {
             "i": 21,
-            "prompt_tokens": 56361,
-            "reusable_tokens": 18752,
-            "reusable_frac": 0.3327
+            "prompt_tokens": 48678,
+            "reusable_tokens": 16704,
+            "reusable_frac": 0.3432
           },
           {
             "i": 22,
-            "prompt_tokens": 56465,
-            "reusable_tokens": 18752,
-            "reusable_frac": 0.3321
+            "prompt_tokens": 48759,
+            "reusable_tokens": 16768,
+            "reusable_frac": 0.3439
           },
           {
             "i": 23,
-            "prompt_tokens": 56510,
-            "reusable_tokens": 18880,
-            "reusable_frac": 0.3341
+            "prompt_tokens": 48781,
+            "reusable_tokens": 16832,
+            "reusable_frac": 0.3451
           },
           {
             "i": 24,
-            "prompt_tokens": 60119,
-            "reusable_tokens": 18944,
-            "reusable_frac": 0.3151
+            "prompt_tokens": 51984,
+            "reusable_tokens": 16832,
+            "reusable_frac": 0.3238
           },
           {
             "i": 25,
-            "prompt_tokens": 60335,
-            "reusable_tokens": 19008,
-            "reusable_frac": 0.315
+            "prompt_tokens": 52200,
+            "reusable_tokens": 16896,
+            "reusable_frac": 0.3237
           }
         ]
       }
     ]
   },
-  "prune_window": 52000,
+  "prune_window": 45000,
   "prune": {
-    "window": 52000,
-    "prunes": 1,
+    "window": 45000,
+    "prunes": 4,
     "prune_events": [
       {
+        "at_request": 10,
+        "detail": "pruned 3 old turn(s) (~13,095 tokens); prefix cache is now cold, the next request pays full price; 3 loaded file range(s) can be re-read now"
+      },
+      {
+        "at_request": 14,
+        "detail": "pruned 4 old turn(s) (~8,166 tokens); prefix cache is now cold, the next request pays full price; 2 loaded file range(s) can be re-read now"
+      },
+      {
         "at_request": 20,
-        "detail": "pruned 8 old turn(s) (~29,629 tokens); prefix cache is now cold, the next request pays full price; 7 loaded file range(s) can be re-read now"
+        "detail": "pruned 4 old turn(s) (~12,752 tokens); prefix cache is now cold, the next request pays full price; 4 loaded file range(s) can be re-read now"
+      },
+      {
+        "at_request": 24,
+        "detail": "pruned 2 old turn(s) (~6,370 tokens); prefix cache is now cold, the next request pays full price; 1 loaded file range(s) can be re-read now"
       }
     ],
     "events": [
       {
-        "turns_dropped": 8,
-        "messages_dropped": 35,
-        "tokens_dropped": 29629,
-        "tokens_after": 24239
+        "turns_dropped": 3,
+        "messages_dropped": 14,
+        "tokens_dropped": 13095,
+        "tokens_after": 19221
+      },
+      {
+        "turns_dropped": 4,
+        "messages_dropped": 13,
+        "tokens_dropped": 8166,
+        "tokens_after": 20644
+      },
+      {
+        "turns_dropped": 4,
+        "messages_dropped": 14,
+        "tokens_dropped": 12752,
+        "tokens_after": 21335
+      },
+      {
+        "turns_dropped": 2,
+        "messages_dropped": 5,
+        "tokens_dropped": 6370,
+        "tokens_after": 22277
       }
     ],
     "per_request": [
       {
         "i": 0,
-        "prompt_tokens": 16816,
+        "prompt_tokens": 15259,
         "reusable_tokens": 0,
         "reusable_frac": 0.0
       },
       {
         "i": 1,
-        "prompt_tokens": 17132,
-        "reusable_tokens": 16768,
-        "reusable_frac": 0.9788
+        "prompt_tokens": 15600,
+        "reusable_tokens": 15232,
+        "reusable_frac": 0.9764
       },
       {
         "i": 2,
-        "prompt_tokens": 22360,
-        "reusable_tokens": 17088,
-        "reusable_frac": 0.7642
+        "prompt_tokens": 20846,
+        "reusable_tokens": 15552,
+        "reusable_frac": 0.746
       },
       {
         "i": 3,
-        "prompt_tokens": 22434,
-        "reusable_tokens": 22336,
+        "prompt_tokens": 20892,
+        "reusable_tokens": 20800,
         "reusable_frac": 0.9956
       },
       {
         "i": 4,
-        "prompt_tokens": 24597,
-        "reusable_tokens": 22400,
-        "reusable_frac": 0.9107
+        "prompt_tokens": 22727,
+        "reusable_tokens": 20864,
+        "reusable_frac": 0.918
       },
       {
         "i": 5,
-        "prompt_tokens": 24657,
-        "reusable_tokens": 24576,
-        "reusable_frac": 0.9967
-      },
-      {
-        "i": 6,
-        "prompt_tokens": 31511,
-        "reusable_tokens": 24640,
-        "reusable_frac": 0.7819
-      },
-      {
-        "i": 7,
-        "prompt_tokens": 31571,
-        "reusable_tokens": 31488,
-        "reusable_frac": 0.9974
-      },
-      {
-        "i": 8,
-        "prompt_tokens": 31707,
-        "reusable_tokens": 31552,
-        "reusable_frac": 0.9951
-      },
-      {
-        "i": 9,
-        "prompt_tokens": 31760,
-        "reusable_tokens": 31680,
-        "reusable_frac": 0.9975
-      },
-      {
-        "i": 10,
-        "prompt_tokens": 35697,
-        "reusable_tokens": 31744,
-        "reusable_frac": 0.8893
-      },
-      {
-        "i": 11,
-        "prompt_tokens": 35746,
-        "reusable_tokens": 35648,
-        "reusable_frac": 0.9973
-      },
-      {
-        "i": 12,
-        "prompt_tokens": 40659,
-        "reusable_tokens": 35712,
-        "reusable_frac": 0.8783
-      },
-      {
-        "i": 13,
-        "prompt_tokens": 40714,
-        "reusable_tokens": 40640,
-        "reusable_frac": 0.9982
-      },
-      {
-        "i": 14,
-        "prompt_tokens": 40848,
-        "reusable_tokens": 40704,
-        "reusable_frac": 0.9965
-      },
-      {
-        "i": 15,
-        "prompt_tokens": 40900,
-        "reusable_tokens": 40832,
-        "reusable_frac": 0.9983
-      },
-      {
-        "i": 16,
-        "prompt_tokens": 48070,
-        "reusable_tokens": 40896,
-        "reusable_frac": 0.8508
-      },
-      {
-        "i": 17,
-        "prompt_tokens": 48125,
-        "reusable_tokens": 48064,
-        "reusable_frac": 0.9987
-      },
-      {
-        "i": 18,
-        "prompt_tokens": 48260,
-        "reusable_tokens": 48064,
-        "reusable_frac": 0.9959
-      },
-      {
-        "i": 19,
-        "prompt_tokens": 48307,
-        "reusable_tokens": 48256,
-        "reusable_frac": 0.9989
-      },
-      {
-        "i": 20,
-        "prompt_tokens": 24887,
-        "reusable_tokens": 16768,
-        "reusable_frac": 0.6738
-      },
-      {
-        "i": 21,
-        "prompt_tokens": 24939,
-        "reusable_tokens": 24832,
-        "reusable_frac": 0.9957
-      },
-      {
-        "i": 22,
-        "prompt_tokens": 28876,
-        "reusable_tokens": 24896,
-        "reusable_frac": 0.8622
-      },
-      {
-        "i": 23,
-        "prompt_tokens": 28922,
-        "reusable_tokens": 28864,
+        "prompt_tokens": 22766,
+        "reusable_tokens": 22720,
         "reusable_frac": 0.998
       },
       {
+        "i": 6,
+        "prompt_tokens": 28416,
+        "reusable_tokens": 22720,
+        "reusable_frac": 0.7995
+      },
+      {
+        "i": 7,
+        "prompt_tokens": 28449,
+        "reusable_tokens": 28416,
+        "reusable_frac": 0.9988
+      },
+      {
+        "i": 8,
+        "prompt_tokens": 28558,
+        "reusable_tokens": 28416,
+        "reusable_frac": 0.995
+      },
+      {
+        "i": 9,
+        "prompt_tokens": 28592,
+        "reusable_tokens": 28544,
+        "reusable_frac": 0.9983
+      },
+      {
+        "i": 10,
+        "prompt_tokens": 19532,
+        "reusable_tokens": 15232,
+        "reusable_frac": 0.7798
+      },
+      {
+        "i": 11,
+        "prompt_tokens": 19558,
+        "reusable_tokens": 19520,
+        "reusable_frac": 0.9981
+      },
+      {
+        "i": 12,
+        "prompt_tokens": 23462,
+        "reusable_tokens": 19520,
+        "reusable_frac": 0.832
+      },
+      {
+        "i": 13,
+        "prompt_tokens": 23490,
+        "reusable_tokens": 23424,
+        "reusable_frac": 0.9972
+      },
+      {
+        "i": 14,
+        "prompt_tokens": 20934,
+        "reusable_tokens": 15232,
+        "reusable_frac": 0.7276
+      },
+      {
+        "i": 15,
+        "prompt_tokens": 20959,
+        "reusable_tokens": 20928,
+        "reusable_frac": 0.9985
+      },
+      {
+        "i": 16,
+        "prompt_tokens": 26185,
+        "reusable_tokens": 20928,
+        "reusable_frac": 0.7992
+      },
+      {
+        "i": 17,
+        "prompt_tokens": 26214,
+        "reusable_tokens": 26176,
+        "reusable_frac": 0.9986
+      },
+      {
+        "i": 18,
+        "prompt_tokens": 28049,
+        "reusable_tokens": 26176,
+        "reusable_frac": 0.9332
+      },
+      {
+        "i": 19,
+        "prompt_tokens": 28074,
+        "reusable_tokens": 28032,
+        "reusable_frac": 0.9985
+      },
+      {
+        "i": 20,
+        "prompt_tokens": 21624,
+        "reusable_tokens": 15232,
+        "reusable_frac": 0.7044
+      },
+      {
+        "i": 21,
+        "prompt_tokens": 21647,
+        "reusable_tokens": 21568,
+        "reusable_frac": 0.9964
+      },
+      {
+        "i": 22,
+        "prompt_tokens": 25751,
+        "reusable_tokens": 21632,
+        "reusable_frac": 0.84
+      },
+      {
+        "i": 23,
+        "prompt_tokens": 25773,
+        "reusable_tokens": 25728,
+        "reusable_frac": 0.9983
+      },
+      {
         "i": 24,
-        "prompt_tokens": 32506,
-        "reusable_tokens": 28864,
-        "reusable_frac": 0.888
+        "prompt_tokens": 22589,
+        "reusable_tokens": 15232,
+        "reusable_frac": 0.6743
       },
       {
         "i": 25,
-        "prompt_tokens": 32723,
-        "reusable_tokens": 32448,
-        "reusable_frac": 0.9916
+        "prompt_tokens": 22805,
+        "reusable_tokens": 22528,
+        "reusable_frac": 0.9879
       }
     ],
-    "reusable_frac": 0.924
+    "reusable_frac": 0.8876
   },
   "repomap": {
     "auto_budget_1m_window": 15000,
-    "files_indexed": 32,
-    "symbols_indexed": 590,
-    "treesitter": true,
+    "files_indexed": 40,
+    "symbols_indexed": 807,
+    "treesitter": false,
     "curve": [
       {
         "budget": 2000,
-        "tokens": 2030,
-        "lines": 73,
+        "tokens": 1991,
+        "lines": 88,
         "truncated": true
       },
       {
         "budget": 4000,
-        "tokens": 4042,
-        "lines": 148,
+        "tokens": 3905,
+        "lines": 169,
         "truncated": true
       },
       {
         "budget": 6000,
-        "tokens": 5991,
-        "lines": 215,
+        "tokens": 5818,
+        "lines": 265,
         "truncated": true
       },
       {
         "budget": 8000,
-        "tokens": 7980,
-        "lines": 277,
+        "tokens": 7725,
+        "lines": 354,
         "truncated": true
       },
       {
         "budget": 12000,
-        "tokens": 11943,
-        "lines": 402,
+        "tokens": 11583,
+        "lines": 510,
         "truncated": true
       },
       {
         "budget": 16000,
-        "tokens": 15932,
-        "lines": 532,
+        "tokens": 15382,
+        "lines": 683,
         "truncated": true
       },
       {
         "budget": 24000,
-        "tokens": 17492,
-        "lines": 590,
+        "tokens": 18148,
+        "lines": 807,
         "truncated": false
       }
     ],
-    "unbounded_tokens": 17492,
-    "unbounded_with_vendored_tokens": 63721
+    "unbounded_tokens": 18148,
+    "unbounded_with_vendored_tokens": 18148
   },
   "deny": {
     "commands_tested": 9,

@@ -6,24 +6,24 @@
 <line x1='80' y1='268.0' x2='692' y2='268.0' stroke='#eee'/>
 <text x='72' y='272.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0000</text>
 <line x1='80' y1='216.5' x2='692' y2='216.5' stroke='#eee'/>
-<text x='72' y='220.5' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0151</text>
+<text x='72' y='220.5' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0133</text>
 <line x1='80' y1='165.0' x2='692' y2='165.0' stroke='#eee'/>
-<text x='72' y='169.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0301</text>
+<text x='72' y='169.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0265</text>
 <line x1='80' y1='113.5' x2='692' y2='113.5' stroke='#eee'/>
-<text x='72' y='117.5' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0452</text>
+<text x='72' y='117.5' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0398</text>
 <line x1='80' y1='62.0' x2='692' y2='62.0' stroke='#eee'/>
-<text x='72' y='66.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0602</text>
-<rect x='109.1' y='189.8' width='94.9' height='78.2' fill='#a4485f' rx='2'/>
-<text x='156.5' y='183.8' text-anchor='middle' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0229</text>
+<text x='72' y='66.0' text-anchor='end' fill='#666' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0530</text>
+<rect x='109.1' y='189.5' width='94.9' height='78.5' fill='#a4485f' rx='2'/>
+<text x='156.5' y='183.5' text-anchor='middle' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0202</text>
 <text x='156.5' y='284.0' text-anchor='middle' fill='#444' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>as-built</text>
-<rect x='262.1' y='172.9' width='94.9' height='95.1' fill='#e07a3f' rx='2'/>
-<text x='309.5' y='166.9' text-anchor='middle' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0278</text>
+<rect x='262.1' y='171.7' width='94.9' height='96.3' fill='#e07a3f' rx='2'/>
+<text x='309.5' y='165.7' text-anchor='middle' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0248</text>
 <text x='309.5' y='284.0' text-anchor='middle' fill='#444' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>no-ledger</text>
-<rect x='415.1' y='217.2' width='94.9' height='50.8' fill='#4e9a51' rx='2'/>
-<text x='462.5' y='211.2' text-anchor='middle' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0149</text>
+<rect x='415.1' y='216.8' width='94.9' height='51.2' fill='#4e9a51' rx='2'/>
+<text x='462.5' y='210.8' text-anchor='middle' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0132</text>
 <text x='462.5' y='284.0' text-anchor='middle' fill='#444' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>rolling-summary</text>
 <rect x='568.1' y='62.0' width='94.9' height='206.0' fill='#a4485f' rx='2'/>
-<text x='615.5' y='56.0' text-anchor='middle' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0602</text>
+<text x='615.5' y='56.0' text-anchor='middle' fill='#333' font-size='11' font-family='ui-monospace,Menlo,Consolas,monospace'>$0.0530</text>
 <text x='615.5' y='284.0' text-anchor='middle' fill='#444' font-size='10' font-family='ui-monospace,Menlo,Consolas,monospace'>three-zone</text>
 <text x='16' y='165.0' fill='#333' font-size='12' transform='rotate(-90 16 165.0)' text-anchor='middle' font-family='ui-monospace,Menlo,Consolas,monospace'>USD</text>
 </svg>

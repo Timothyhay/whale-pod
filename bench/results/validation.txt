@@ -2,17 +2,17 @@
 
 variant            prompt tok   reusable   reuse  billed tok   prompt $  cuts  vs as-built
 ------------------------------------------------------------------------------------------
-as-built            1,027,163    966,336   94.1%      60,827    0.02287     0            —
-no-ledger           1,230,881  1,152,192   93.6%      78,689    0.02782     0    +22% cost
-rolling-summary       578,765    517,120   89.3%      61,645    0.01486     3    -35% cost
-three-zone          1,029,713    450,560   43.8%     579,153    0.06023     0   +163% cost
+as-built              911,083    858,240   94.2%      52,843    0.02020     0            —
+no-ledger           1,099,805  1,030,528   93.7%      69,277    0.02478     0    +23% cost
+rolling-summary       518,504    465,216   89.7%      53,288    0.01317     3    -35% cost
+three-zone            913,223    405,312   44.4%     507,911    0.05301     0   +162% cost
 
 Reusable prefix per request (share of that request's prompt):
 
  100% │ ● ● ● ●●● ● ●●● ●●● ●●●·●
-      │    ●   · ● ● · ●   ● · ● 
-  80% │  ●○  ●   × ×             
-      │    ○○          ×   ×     
+      │    ●     ● ● · ●   ● · ● 
+  80% │      ● · × ×             
+      │  ●○○○          ×   ×     
   60% │      ○○○○                
       │          ○○              
   40% │            ○○○○○○○○      
@@ -25,26 +25,26 @@ Reusable prefix per request (share of that request's prompt):
 
 Session prompt cost, $ (cached tokens billed at 20%):
 
-as-built         ████████████████▊                            $0.02287
-no-ledger        ████████████████████▍                        $0.02782
-rolling-summary  ██████████▉                                  $0.01486
-three-zone       ████████████████████████████████████████████ $0.06023
+as-built         ████████████████▉                            $0.02020
+no-ledger        ████████████████████▋                        $0.02478
+rolling-summary  ███████████                                  $0.01317
+three-zone       ████████████████████████████████████████████ $0.05301
 
-### Context design variants (window 52,000, 26 requests)
+### Context design variants (window 45,000, 26 requests)
 
 variant            prompt tok   reusable   reuse  billed tok   prompt $  cuts  vs as-built
 ------------------------------------------------------------------------------------------
-as-built              854,724    789,760   92.4%      64,964    0.02006     1            —
-no-ledger             834,940    752,256   90.1%      82,684    0.02098     2     +5% cost
-rolling-summary       578,765    517,120   89.3%      61,645    0.01486     3    -26% cost
-three-zone          1,029,713    450,560   43.8%     579,153    0.06023     0   +200% cost
+as-built              608,751    540,352   88.8%      68,399    0.01588     4            —
+no-ledger             613,245    539,776   88.0%      73,469    0.01633     4     +3% cost
+rolling-summary       518,504    465,216   89.7%      53,288    0.01317     3    -17% cost
+three-zone            913,223    405,312   44.4%     507,911    0.05301     0   +234% cost
 
 Reusable prefix per request (share of that request's prompt):
 
- 100% │ ● ● ● ●●● ● ●●● ●●● ●×● ●
-      │    ●   · ● ●   ● ·   ● ● 
-  80% │  ●○  ●   × ×   ·   ·     
-      │    ○○        · ×   ●   · 
+ 100% │ ● ● ● ●●● ● ●×● ●×● ●×● ●
+      │    ●       ·     ●     × 
+  80% │      ●   ● ●   ●     ●   
+      │  ●○○○  ·     ● ×   ●   ● 
   60% │      ○○○○                
       │          ○○              
   40% │            ○○○○○○○○      
@@ -57,22 +57,25 @@ Reusable prefix per request (share of that request's prompt):
 
 Session prompt cost, $ (cached tokens billed at 20%):
 
-as-built         ██████████████▊                              $0.02006
-no-ledger        ███████████████▍                             $0.02098
-rolling-summary  ██████████▉                                  $0.01486
-three-zone       ████████████████████████████████████████████ $0.06023
+as-built         █████████████▎                               $0.01588
+no-ledger        █████████████▋                               $0.01633
+rolling-summary  ███████████                                  $0.01317
+three-zone       ████████████████████████████████████████████ $0.05301
 
-### Pruning at a 52,000-token window
+### Pruning at a 45,000-token window
 
-prunes: 1
-  dropped 8 turn(s) / 35 message(s), ~29,629 tokens -> 24,239 in context
+prunes: 4
+  dropped 3 turn(s) / 14 message(s), ~13,095 tokens -> 19,221 in context
+  dropped 4 turn(s) / 13 message(s), ~8,166 tokens -> 20,644 in context
+  dropped 4 turn(s) / 14 message(s), ~12,752 tokens -> 21,335 in context
+  dropped 2 turn(s) / 5 message(s), ~6,370 tokens -> 22,277 in context
 
 Reusable prefix per request (▼ = prune):
 
- 100% │ · · · ··· · ··· ··· · · ·
-      │    ·     · ·   ·     · · 
-  80% │  ·   ·                   
-      │                    ·     
+ 100% │ · · · ··· · · · · · · · ·
+      │    ·             ·       
+  80% │      ·   · ·   ·     ·   
+      │  ·           ·     ·   · 
   60% │                          
       │                          
   40% │                          
@@ -81,27 +84,27 @@ Reusable prefix per request (▼ = prune):
       │                          
    0% │·                         
       └──────────────────────────
-                          ▼      
+                ▼   ▼     ▼   ▼  
        · as-built @ small window
 
-session reusable prefix: 92.4%
+session reusable prefix: 88.8%
 
 ### Repo-map token budget
 
-32 files, 590 symbols indexed (tree-sitter: True)
+40 files, 807 symbols indexed (tree-sitter: False)
 auto budget for a 1M window: 15,000 tokens
-unbudgeted render of the same index: 17,492 tokens
-unbudgeted, vendored reference/ included (a fresh checkout before excludes): 63,721 tokens
+unbudgeted render of the same index: 18,148 tokens
+unbudgeted, vendored reference/ included (a fresh checkout before excludes): 18,148 tokens
 
 Rendered size vs configured budget:
 
- 2,000  █████▏                                        2,030 tok
- 4,000  ██████████▎                                   4,042 tok
- 6,000  ███████████████▏                              5,991 tok
- 8,000  ████████████████████▏                         7,980 tok
-12,000  ██████████████████████████████               11,943 tok
-16,000  ████████████████████████████████████████▏    15,932 tok
-24,000  ████████████████████████████████████████████ 17,492 tok
+ 2,000  ████▉                                         1,991 tok
+ 4,000  █████████▌                                    3,905 tok
+ 6,000  ██████████████▏                               5,818 tok
+ 8,000  ██████████████████▊                           7,725 tok
+12,000  ████████████████████████████▏                11,583 tok
+16,000  █████████████████████████████████████▍       15,382 tok
+24,000  ████████████████████████████████████████████ 18,148 tok
 
 ### Deny tier under --yes
 

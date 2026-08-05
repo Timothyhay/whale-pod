@@ -32,6 +32,9 @@ treesitter = [
     "tree-sitter-python",
     "tree-sitter-javascript",
 ]
+# DeepSeek V4 BPE for accurate benchmark token counting and runtime context stats
+# (the offline bench falls back to tiktoken or heuristic when absent).
+tokenizer = ["tokenizers>=0.20"]
 dev = ["pytest>=7.0"]
 
 [project.scripts]

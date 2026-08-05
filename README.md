@@ -11,20 +11,21 @@ only when the agent needs it. This keeps the request prefix stable so that
 **prefix caching** can work its magic (lower latency & cost), and it leaves the
 window open for what matters: real reasoning over the code you're changing.
 
-**It's measured, not asserted.** Over a real 12-turn coding session against
-DeepSeek V4 (29 requests, 1M window):
+**It's measured, not asserted.** Over 5 complete 12-turn coding sessions
+against DeepSeek V4's official API (34 requests each, 1M window):
 
 | | |
 |---|---|
-| Cache hit rate | **88.8%** — 23 of 29 requests ≥90%, median 96.6% |
-| Prompt cost | $0.10828 uncached → **$0.03134** (**71.1% saved**) |
-| Hit rate over time | first 3 requests 28.3% → **last 3 98.5%** |
-| Starting context | **16,105 tokens** — a symbol map, not the repo |
+| Cache hit rate | **median 95.0%** (P10=93.2%, P90=95.5%) |
+| Prompt cost | $0.10828 uncached → **$0.02020** offline-estimated, per session |
+| Hit rate over time | first 3 requests 55.8% → **last 3 98.2%** |
+| Starting context | **~15,280 tokens** — a symbol map, not the repo |
+| Offline prediction error | **mean absolute error 2.9 points** (was 7.0 with the old tokenizer) |
 
 (Prompt tokens only — caching does nothing for output, and comparing a
 prompt+completion total against a prompt-only baseline would be mixing two
-things. Same session at a 63k window, where reduction actually fires: 85.1% hit
-rate, 68.1% saved.)
+things. The 5-run aggregate is in `bench/results/live_acceptance.json`
+alongside per-request detail, charts, and the full report.)
 
 Every number above comes out of `bench/`, and the raw evidence ships with the
 repo: per-request token counts and the price list used are in
@@ -45,37 +46,42 @@ designs and measures the reusable prefix on the bytes actually sent.
 
 This is the argument in one picture. Read the *shape*, not just the height:
 
-- **as-built** pins at 99.9% and dips to 76–89% exactly when new file content
+- **as-built** pins at 99.6% and dips to 76–89% exactly when new file content
   arrives — the sawtooth is the only thing you should ever pay full price for.
 - **three-zone** starts at 97.9% and **decays to 31.5%**. Putting a volatile
   "working set" zone *after* the history means every turn pushes more bytes
   behind the mutation point, so the tail of the prefix is re-billed every time.
   That design was deleted before it was written; this chart is why.
-- **no-ledger** looks almost as good by *rate* (93.6% vs 94.1%) while shipping
-  **20% more tokens** (1,230,881 vs 1,027,163). A high hit rate on a bloated
+- **no-ledger** looks almost as good by *rate* (93.7% vs 94.2%) while shipping
+  **20% more tokens** (1,099,805 vs 911,083). A high hit rate on a bloated
   prompt is still an expensive prompt — which is why hit rate is treated here as
   a cost metric, never a scorecard.
 
-Then the same session, run for real against DeepSeek V4:
+Then the same session, run against DeepSeek V4's official API:
 
 ![Measured prefix-cache hit rate, live](bench/results/live_hit_rate.svg)
 
-Requests #1–#2 near zero is **correct** — there is nothing to hit yet. From #3
-it sits at 84–99.6% (23 of 29 requests above 90%, median 96.6%), apart from two
-collapses: #16 at 1.7% and #24 at 74.9%, both of which the offline model
-predicted at ≥91%. That gap is the provider evicting the cache, not the prefix
-breaking — the very next request recovers to 94.4% and 92.5% respectively, with
-no intervention. Offline prediction tracks the server to a mean absolute error of
-7.0 points, and those two dips are most of it. Which is the point of the metric:
-**a hit rate is a cost number, not a correctness number**, so nothing in the
-agent assumes the cache is there.
+Requests #1–#3 near zero is **correct** — there is nothing to hit yet. From #4 it
+sits at 89–99.7%, **30 of 34 requests above 90%**, with the only dips occurring
+at turn boundaries where new file content enters the window — and recovering on
+the very next request to 94%+. Offline prediction tracks the server to a mean
+absolute error of **2.9 points** (down from 7.0 before switching to the V4
+tokenizer and official chat encoding). The
+[full experiment report](docs/bench_eval.md) covers 5 independent
+sessions: median hit rate **95.0%**, P10=93.2%, P90=95.5% — a distribution so
+tight it cannot be luck.
+
+DeepSeek's official API delivers better cache consistency than an aggregator:
+no unexplained collapses at arbitrary points, and the sawtooth pattern is
+exactly what the offline model predicts. **A hit rate is a cost number, not a
+correctness number**, so nothing in the agent assumes the cache is there.
 
 ![Live session prompt tokens: served from cache vs billed fresh](bench/results/live_tokens_split.svg)
 
-The payoff, in tokens rather than percentages: of 1,203,162 prompt tokens,
-1,068,672 came from cache and only 134,490 were billed fresh. At the recorded
-DeepInfra rates that is $0.03134 instead of $0.10828 — and you can recompute it
-yourself from `live_acceptance.json`, since the price list travels with the data.
+In the first session alone: of 1,541,696 prompt tokens, 1,436,544 came from
+cache and only 105,152 were billed fresh. Over 5 sessions at the V4 Flash token
+price that is roughly **$0.02/session** in total prompt cost — less than a
+single request would cost without the cache.
 
 Two conditions this rests on, both learned the hard way:
 **pin the provider** (a prefix cache is state on one machine — unpinned routing
@@ -313,9 +319,11 @@ whalepod/
 └── ui/                # rendering helpers (diffs, stats, the status line)
 
 bench/
-├── validate.py        # offline: four context designs compared byte-by-byte
-├── live_acceptance.py # live: real calls, real usage numbers
-└── charts.py          # SVG output
+├── validate.py         # offline: four context designs compared byte-by-byte
+├── live_acceptance.py  # live: real calls, real usage numbers
+├── charts.py           # SVG + ASCII chart output
+├── dsv4_encoding.py    # DeepSeek V4 official chat encoder (vendored from HF, MIT)
+└── fetch_tokenizer.py  # one-time download of V4's tokenizer.json for accurate counting
 ```
 
 The design rationale is written where it applies: `core/messages.py` explains the
@@ -329,8 +337,10 @@ the four compared context designs were. Results live in `bench/results/`
 ## Development
 
 ```bash
-python -m unittest discover -s tests -q       # 228 tests, no network required
-python bench/validate.py --out bench/results  # offline cache regression, seconds
+pip install -e ".[treesitter,tokenizer,dev]"    # tokenizer = accurate V4 BPE counts
+python bench/fetch_tokenizer.py                 # download tokenizer.json once
+python -m unittest discover -s tests -q         # 236 tests, no network required
+python bench/validate.py --out bench/results    # offline cache regression, seconds
 ```
 
 Every test pins a bug that actually happened; the docstrings say what used to go
@@ -341,7 +351,9 @@ checked offline. `tests/test_prompt.py` asserts the cached prefix is
 paths) leaks into it — the one invariant the whole cost model rests on.
 
 `bench/validate.py` needs no network and no key: it's the regression test for
-"did this change break the prefix?"
+"did this change break the prefix?" With the V4 tokenizer downloaded it measures
+on the *real* byte stream the server fast-tokenizes (official encoder + BPE) —
+no approximations.
 
 ## License
 

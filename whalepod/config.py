@@ -24,22 +24,25 @@ PROJECT_CONFIG_FILE = ".whalepod.json"
 
 # provider -> list of env vars to check, in order
 _ENV_FOR_TYPE = {
-    "vllm":    ["WHALEPOD_API_KEY", "HF_TOKEN"],
-    "openai":  ["WHALEPOD_API_KEY", "OPENAI_API_KEY"],
+    "deepseek": ["WHALEPOD_API_KEY", "DEEPSEEK_API_KEY"],
+    "custom":   ["WHALEPOD_API_KEY"],
+    "openai":   ["WHALEPOD_API_KEY", "OPENAI_API_KEY"],
     "anthropic": ["WHALEPOD_API_KEY", "ANTHROPIC_API_KEY"],
 }
 
 _DEFAULT_MODELS = {
-    "vllm": "deepseek-ai/DeepSeek-V4-Flash-0731",
-    "openai": "deepseek-chat",
+    "deepseek": "deepseek-chat",
+    "custom": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "openai": "gpt-5",
     "anthropic": "claude-sonnet-5",
 }
 
-# Public defaults only. A self-hosted vLLM / dedicated inference endpoint has no
-# sensible default and must be configured.
+# Public defaults only. A self-hosted / custom endpoint has no sensible default
+# and must be configured.
 _DEFAULT_BASE_URLS = {
-    "vllm": "",
-    "openai": "https://api.deepseek.com",
+    "deepseek": "https://api.deepseek.com",
+    "custom": "",
+    "openai": "https://api.openai.com",
     "anthropic": "https://api.anthropic.com",
 }
 
@@ -63,7 +66,7 @@ class RepoMapConfig:
 
 @dataclass
 class EndpointConfig:
-    type: str = "vllm"                    # vllm | openai | anthropic
+    type: str = "custom"                  # deepseek | custom | openai | anthropic
     # No default URL: one developer's private HuggingFace endpoint used to be
     # baked in here, so a fresh checkout silently pointed every request at it.
     # An unset URL is resolved per provider (see resolved_base_url) or reported.
@@ -149,7 +152,7 @@ class Config:
             raise ValueError(
                 f"no endpoint URL configured for type {self.endpoint.type!r}.\n"
                 f"Run `whalepod auth`, or set WHALEPOD_BASE_URL.")
-        if not self.resolved_api_key() and self.endpoint.type != "vllm":
+        if not self.resolved_api_key():
             raise ValueError(
                 f"no API key found for {self.endpoint.type!r}. Run "
                 f"`whalepod auth`, or set "

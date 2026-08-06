@@ -39,7 +39,7 @@ def _pick_reasoning(d: dict) -> Optional[str]:
 
 
 class VLLMEndpoint(Endpoint):
-    type = "vllm"
+    type = "custom"
 
     def _auth_headers(self) -> dict:
         h = {"Content-Type": "application/json"}

@@ -299,7 +299,7 @@ class TestProviderAffinity(unittest.TestCase):
 
     def test_factory_forwards_extra_body(self):
         from whalepod.endpoints.factory import build_endpoint
-        for typ in ("vllm", "openai", "anthropic"):
+        for typ in ("custom", "openai", "anthropic"):
             ep = build_endpoint(typ, "https://x", api_key="k",
                                 extra_body=self.PIN)
             self.assertEqual(ep.extra_body, self.PIN)

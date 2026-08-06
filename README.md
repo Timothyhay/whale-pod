@@ -11,20 +11,20 @@ only when the agent needs it. This keeps the request prefix stable so that
 **prefix caching** can work its magic (lower latency & cost), and it leaves the
 window open for what matters: real reasoning over the code you're changing.
 
-**It's measured, not asserted.** Over 5 complete 12-turn coding sessions
-against DeepSeek V4's official API (34 requests each, 1M window):
+**It's measured, not asserted.** Over 22 complete 12-turn coding sessions
+against DeepSeek V4's official API (up to 37 requests each, 1M window):
 
 | | |
 |---|---|
-| Cache hit rate | **median 95.0%** (P10=93.2%, P90=95.5%) |
+| Cache hit rate | **median 94.7%** (P10=93.7%, P90=95.3%) |
 | Prompt cost | $0.10828 uncached → **$0.02020** offline-estimated, per session |
-| Hit rate over time | first 3 requests 55.8% → **last 3 98.2%** |
-| Starting context | **~15,280 tokens** — a symbol map, not the repo |
-| Offline prediction error | **mean absolute error 2.9 points** (was 7.0 with the old tokenizer) |
+| Hit rate over time | first 3 requests 87.1% → **last 3 98.2%** |
+| Starting context | **~15,269 tokens** — a symbol map, not the repo |
+| Offline prediction error | **mean absolute error 5.5 points** (was 7.0 with the old tokenizer) |
 
 (Prompt tokens only — caching does nothing for output, and comparing a
 prompt+completion total against a prompt-only baseline would be mixing two
-things. The 5-run aggregate is in `bench/results/live_acceptance.json`
+things. The 22-run aggregate is in `bench/results/live_acceptance.json`
 alongside per-request detail, charts, and the full report.)
 
 Every number above comes out of `bench/`, and the raw evidence ships with the
@@ -62,14 +62,14 @@ Then the same session, run against DeepSeek V4's official API:
 ![Measured prefix-cache hit rate, live](bench/results/live_hit_rate.svg)
 
 Requests #1–#3 near zero is **correct** — there is nothing to hit yet. From #4 it
-sits at 89–99.7%, **30 of 34 requests above 90%**, with the only dips occurring
+sits at 89–99.7%, **30+ of 37 requests above 90%**, with the only dips occurring
 at turn boundaries where new file content enters the window — and recovering on
 the very next request to 94%+. Offline prediction tracks the server to a mean
-absolute error of **2.9 points** (down from 7.0 before switching to the V4
+absolute error of **5.5 points** (down from 7.0 before switching to the V4
 tokenizer and official chat encoding). The
-[full experiment report](docs/bench_eval.md) covers 5 independent
-sessions: median hit rate **95.0%**, P10=93.2%, P90=95.5% — a distribution so
-tight it cannot be luck.
+[full experiment report](docs/bench_eval.md) covers 22 independent
+sessions at 12 turns: median hit rate **94.7%**, P10=93.7%, P90=95.3%; plus
+additional experiments at 6 turns (**91.7%**) and 18 turns (**95.0%**).
 
 DeepSeek's official API delivers better cache consistency than an aggregator:
 no unexplained collapses at arbitrary points, and the sawtooth pattern is
@@ -78,9 +78,9 @@ correctness number**, so nothing in the agent assumes the cache is there.
 
 ![Live session prompt tokens: served from cache vs billed fresh](bench/results/live_tokens_split.svg)
 
-In the first session alone: of 1,541,696 prompt tokens, 1,436,544 came from
-cache and only 105,152 were billed fresh. Over 5 sessions at the V4 Flash token
-price that is roughly **$0.02/session** in total prompt cost — less than a
+In the first session alone: of 1,732,599 prompt tokens, 1,640,960 came from
+cache and only 91,639 were billed fresh. Across 22 sessions at the V4 Flash
+token price that is roughly **$0.02/session** in prompt cost — less than a
 single request would cost without the cache.
 
 Two conditions this rests on, both learned the hard way:

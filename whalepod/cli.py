@@ -44,6 +44,7 @@ WELCOME = r"""
 
 HELP_TEXT = """\
 /help                 this message
+/config               configure endpoint + API key
 /mode                 toggle thinking · instant
 /stats                context + measured cache telemetry
 /context              what files are currently loaded (context ledger)
@@ -300,25 +301,34 @@ def main(ctx, version):
         repl()
 
 
-@main.command("auth")
-def auth():
-    """Configure endpoint + API key."""
-    cfg = load_config()
+ENDPOINT_TYPES = ["deepseek", "custom", "openai", "anthropic"]
+
+
+def _do_auth_flow(cfg: Config) -> Config:
+    """Interactive endpoint setup. Works in both CLI and REPL contexts."""
     click.echo("WhalePod endpoint setup")
     typ = click.prompt("Endpoint type", default=cfg.endpoint.type,
-                       type=click.Choice(["vllm", "openai", "anthropic"]))
-    base = click.prompt("Base URL (no trailing /v1)",
+                       type=click.Choice(ENDPOINT_TYPES))
+    base = click.prompt("Base URL (no trailing /v1, e.g. https://api.deepseek.com)",
                         default=cfg.endpoint.base_url or "")
     key = click.prompt("API key (ENTER to keep / use env)", default="",
                        show_default=False, hide_input=True)
     model = click.prompt("Model", default=cfg.endpoint.model or "",
                          show_default=False)
     cfg.endpoint.type = typ
-    cfg.endpoint.base_url = base
+    cfg.endpoint.base_url = base.strip()
     if key:
         cfg.endpoint.api_key = key
     if model:
-        cfg.endpoint.model = model
+        cfg.endpoint.model = model.strip()
+    return cfg
+
+
+@main.command("auth")
+def auth():
+    """Configure endpoint + API key."""
+    cfg = load_config()
+    _do_auth_flow(cfg)
     p = save_global_config(cfg)
     click.echo(f"Saved to {p}")
 
@@ -543,6 +553,10 @@ def _handle_command(session: Session, user: str) -> bool:
     cmd = user.split()[0]
     if cmd == "/help":
         session.echo(HELP_TEXT)
+    elif cmd == "/config":
+        _do_auth_flow(session.cfg)
+        p = save_global_config(session.cfg)
+        session.echo(f"Saved to {p} — restart to apply", "dim")
     elif cmd == "/mode":
         session.echo(f"mode: {session.agent.toggle_mode()}", "yellow")
     elif cmd == "/stats":

@@ -9,7 +9,8 @@ from .openai import OpenAIChatEndpoint
 from .anthropic import AnthropicEndpoint
 
 _REGISTRY = {
-    "vllm": VLLMEndpoint,
+    "deepseek": VLLMEndpoint,
+    "custom": VLLMEndpoint,
     "openai": OpenAIChatEndpoint,
     "anthropic": AnthropicEndpoint,
 }

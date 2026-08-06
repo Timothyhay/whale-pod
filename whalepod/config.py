@@ -92,6 +92,10 @@ class Config:
     sandbox: str = "confirm"              # confirm | readonly | none | yes
     repo_map: RepoMapConfig = field(default_factory=RepoMapConfig)
     theme: str = "whale"
+    # Print each tool call and its result as the turn runs. On by default: a turn
+    # that reads six files and runs the tests is mostly work the model never
+    # mentions in its prose, and without the trace the user cannot see it happen.
+    show_tool_calls: bool = True
     history_file: str = ""                # if empty, default to config dir / history
     context_window: int = 1_000_000       # DeepSeek V4
     # Pruning thresholds, as fractions of the window. These replace the old
@@ -217,6 +221,7 @@ def save_global_config(cfg: Config) -> Path:
         "sandbox": cfg.sandbox,
         "repo_map": asdict(cfg.repo_map),
         "theme": cfg.theme,
+        "show_tool_calls": cfg.show_tool_calls,
         "context_window": cfg.context_window,
         "prune_at": cfg.prune_at,
         "prune_to": cfg.prune_to,

@@ -54,6 +54,7 @@ HELP_ITEMS = [
     ("/help",      "this message"),
     ("/config",    "configure endpoint + API key"),
     ("/mode",      "toggle thinking \u00b7 instant"),
+    ("/trace",     "toggle the tool-call trace"),
     ("/stats",     "context + measured cache telemetry"),
     ("/context",   "what files are currently loaded"),
     ("/refresh",   "rescan the repo map"),
@@ -150,6 +151,171 @@ def render_diff(diff_text: str, console=None) -> str:
         else:
             out.append(f"[dim]{esc}[/dim]")
     return "\n".join(out)
+
+
+# ------------------------------------------------------- transcript marks
+# The transcript is a flat stream of printed blocks, so every kind of block owns
+# a mark in the left gutter:
+#
+#     ❯  the user's prompt          ▸  a tool call
+#     ●  the assistant's answer     └  that call's result
+#     ·  a notice (dim, stderr)
+#
+# Only the prompt had one before, so a tool trace, a notice and the model's prose
+# arrived as unadorned lines and read as a single wall of text.
+ANSWER_MARK = "●"
+TOOL_MARK = "▸"
+RESULT_MARK = "└"
+GUTTER = "  "                  # continuation indent — the width of "● "
+
+_ANSWER_ANSI = "\033[1;32m"    # green; the user's ❯ is cyan, so they can't be
+_RESET = "\033[0m"             # confused at a glance
+
+
+def answer_open(color: bool = True) -> str:
+    """Opening gutter for a block of assistant text.
+
+    Raw ANSI rather than Rich markup on purpose: the answer is streamed to
+    stdout token by token, and handing each delta to a ``Console`` would re-wrap
+    and re-highlight text that is already half-printed.
+    """
+    return f"{_ANSWER_ANSI}{ANSWER_MARK}{_RESET} " if color else f"{ANSWER_MARK} "
+
+
+# ------------------------------------------------------------- tool trace
+def _clip(text, limit: int) -> str:
+    """Collapse whitespace and bound the length — trace lines are one line."""
+    text = " ".join(str(text).split())
+    return text if len(text) <= limit else text[: max(1, limit - 1)] + "…"
+
+
+def tool_target(name: str, args: dict) -> str:
+    """The one argument that says *which* call this is.
+
+    Deliberately not a dump of the arguments: ``create_file`` carries a whole
+    file and ``edit_file`` the whole replacement text, so printing them verbatim
+    buries the trace in the content it exists to summarize.
+    """
+    args = args or {}
+    if name == "read_file":
+        start = int(args.get("start") or 0)
+        end = int(args.get("end") or 0)
+        rng = f":{start or 1}-{end or ''}" if (start or end) else ""
+        return f"{args.get('path') or '?'}{rng}"
+    if name in ("read_dir", "tree_view"):
+        return args.get("path") or "."
+    if name == "grep":
+        where = args.get("path") or args.get("glob") or ""
+        pattern = _clip(args.get("pattern", ""), 50)
+        return f"{pattern} in {where}" if where else pattern
+    if name in ("edit_file", "create_file", "delete_file"):
+        return args.get("path") or "?"
+    if name == "apply_patch":
+        files = [ln[6:] for ln in (args.get("patch") or "").splitlines()
+                 if ln.startswith("+++ b/")]
+        shown = ", ".join(files[:3]) + ("…" if len(files) > 3 else "")
+        return shown or "patch"
+    if name == "run_command":
+        return _clip(args.get("cmd", ""), 70)
+    if not args:
+        return ""
+    return _clip(", ".join(f"{k}={v!r}" for k, v in args.items()), 70)
+
+
+def tool_result_summary(name: str, result) -> str:
+    """One line saying what a call produced — a size or a reason, never a dump."""
+    if result is None:
+        return "(no result)"
+    meta = getattr(result, "meta", None) or {}
+    if not result.ok:
+        return _clip(result.error or result.output or "failed", 90)
+    if meta.get("ledger_hit"):
+        return "already in context"
+    if name == "read_file":
+        r = meta.get("read") or {}
+        if r:
+            if r.get("complete"):
+                return f"{r.get('lines', 0)} lines"
+            return (f"lines {r.get('start', 0)}-{r.get('end', 0)} of "
+                    f"{r.get('lines', 0)}")
+    if name == "run_command":
+        code = meta.get("exit_code")
+        # The output carries a two-line "$ cmd / (exit n)" header we already say.
+        body = max(0, len((result.output or "").splitlines()) - 2)
+        bits = [] if code is None else [f"exit {code}"]
+        bits.append(f"{body} line{'' if body == 1 else 's'}")
+        return " · ".join(bits)
+    if name == "grep":
+        out = (result.output or "").strip()
+        if not out or out.startswith("(no matches)"):
+            return "no matches"
+        n = len([ln for ln in out.splitlines() if ln.strip()])
+        return f"{n} match{'' if n == 1 else 'es'}"
+    if meta.get("paths"):
+        # A committed write puts "# edit_file: edit a.py (+3 -1)" on its first
+        # line. The diffstat is the part worth reading; the path is already on
+        # the call line directly above.
+        lines = (result.output or "").splitlines()
+        head = lines[0].lstrip("# ") if lines else ""
+        if ": " in head:
+            head = head.split(": ", 1)[1]
+        return _clip(head or ", ".join(meta["paths"]), 90)
+    lines = (result.output or "").splitlines()
+    if not lines:
+        return "ok"
+    if len(lines) == 1:
+        return _clip(lines[0].lstrip("# ").strip(), 90)
+    return f"{len(lines)} lines"
+
+
+def tool_call_text(name: str, args: dict) -> str:
+    return f"{TOOL_MARK} {name}({tool_target(name, args)})"
+
+
+def _timing(duration: float) -> str:
+    # Below 100 ms the number is noise next to the line it sits on.
+    return f"  ({duration:.1f}s)" if duration >= 0.1 else ""
+
+
+def tool_result_text(name: str, result, duration: float = 0.0,
+                     label: str = "") -> str:
+    """``label`` names the call this result belongs to — see the note on
+    :func:`render_tool_result`."""
+    head = f"{label} " if label else ""
+    return (f"{GUTTER}{RESULT_MARK} {head}{tool_result_summary(name, result)}"
+            f"{_timing(duration)}")
+
+
+def render_tool_call(name: str, args: dict):
+    """Styled call line for a Rich console, or the plain string."""
+    if not _HAS_RICH:
+        return tool_call_text(name, args)
+    t = Text()
+    t.append(f"{TOOL_MARK} ", style="blue")
+    t.append(name, style="bold blue")
+    t.append(f"({tool_target(name, args)})", style="dim")
+    return t
+
+
+def render_tool_result(name: str, result, duration: float = 0.0,
+                       label: str = ""):
+    """Styled result line for a Rich console, or the plain string.
+
+    ``label`` is set when the result does not sit directly under its own call
+    line: a batch of reads runs concurrently and finishes in whatever order the
+    filesystem hands them back, so an unlabelled result under two call lines
+    would be guesswork.
+    """
+    if not _HAS_RICH:
+        return tool_result_text(name, result, duration, label)
+    ok = result is None or result.ok
+    t = Text()
+    t.append(f"{GUTTER}{RESULT_MARK} ", style="dim")
+    if label:
+        t.append(f"{label} ", style="blue")
+    t.append(tool_result_summary(name, result), style="dim" if ok else "red")
+    t.append(_timing(duration), style="dim")
+    return t
 
 
 # ------------------------------------------------------------------ stats

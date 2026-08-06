@@ -29,11 +29,12 @@ Design notes worth keeping in mind when editing this file:
 from __future__ import annotations
 
 import asyncio
+import time
 from dataclasses import dataclass, field
 from typing import Awaitable, Callable, Optional
 
 from ..endpoints.base import ChatRequest, EndpointError, StreamingDelta, Usage
-from ..tools.base import ToolResult, parse_args_checked
+from ..tools.base import ToolResult, parse_args, parse_args_checked
 from ..tools.plan import WritePlan
 from ..tools.registry import ToolRegistry
 from .compaction import Compactor, summary_message
@@ -54,6 +55,21 @@ class ConfirmRequest:
     @property
     def is_command(self) -> bool:
         return bool(self.plan and self.plan.command)
+
+
+@dataclass
+class ToolEvent:
+    """One observable moment of a tool call, for a UI to draw.
+
+    Reported for *every* call including the ones that never reach a tool — a
+    malformed-arguments failure or a hallucinated name is exactly the moment a
+    user most wants to see in the trace.
+    """
+    phase: str                       # "start" | "end"
+    name: str
+    args: dict = field(default_factory=dict)
+    result: Optional[ToolResult] = None
+    duration: float = 0.0            # seconds; 0.0 on "start"
 
 
 @dataclass
@@ -80,12 +96,17 @@ class Agent:
     def __init__(self, endpoint, registry: ToolRegistry, mm,
                  config: Optional[AgentConfig] = None,
                  stream_sink: Optional[Callable[[StreamingDelta], None]] = None,
-                 ledger: Optional[ContextLedger] = None):
+                 ledger: Optional[ContextLedger] = None,
+                 tool_sink: Optional[Callable[[ToolEvent], None]] = None):
         self.endpoint = endpoint
         self.registry = registry
         self.mm = mm
         self.config = config or AgentConfig()
         self.stream_sink = stream_sink
+        # Tool calls are the half of a turn the model does not narrate; without a
+        # sink the UI could only show the prose and the user had to infer what was
+        # read or run from the answer.
+        self.tool_sink = tool_sink
         self.ledger = ledger or ContextLedger()
         # The registry invalidates ledger entries when a write lands.
         self.registry.ledger = self.ledger
@@ -303,14 +324,50 @@ class Agent:
                     j += 1
                 batch = calls[i:j]
                 results = await asyncio.gather(
-                    *(self._run_read(c) for c in batch))
+                    *(self._observed(c, self._run_read) for c in batch))
                 for call, out in zip(batch, results):
                     self._append_result(call, out)
                 i = j
                 continue
-            out = await self._run_write_or_other(calls[i])
+            out = await self._observed(calls[i], self._run_write_or_other)
             self._append_result(calls[i], out)
             i += 1
+
+    async def _observed(self, call: dict, run) -> ToolResult:
+        """Run one call, bracketed by tool events.
+
+        A wrapper rather than emitting from inside the runners: those have half a
+        dozen early returns each, and an event tied to one of them is an event
+        that silently goes missing for the others.
+        """
+        fn = call.get("function") or {}
+        name = fn.get("name") or "tool"
+        # Lenient parse: this is for display, and a call whose arguments are
+        # broken JSON still has to appear in the trace. The runner does the
+        # checked parse and reports the error to the model.
+        args = parse_args(fn.get("arguments", ""))
+        started = time.monotonic()
+        self._emit_tool(ToolEvent("start", name, args))
+        try:
+            result = await run(call)
+        except BaseException as e:
+            self._emit_tool(ToolEvent(
+                "end", name, args,
+                ToolResult(ok=False, error=f"{type(e).__name__}: {e}"),
+                time.monotonic() - started))
+            raise
+        self._emit_tool(ToolEvent("end", name, args, result,
+                                  time.monotonic() - started))
+        return result
+
+    def _emit_tool(self, event: ToolEvent) -> None:
+        if self.tool_sink is None:
+            return
+        try:
+            self.tool_sink(event)
+        except Exception:
+            # A renderer that throws must not take the turn down with it.
+            pass
 
     def _append_result(self, call: dict, result: ToolResult) -> None:
         name = (call.get("function") or {}).get("name", "tool")
@@ -431,7 +488,10 @@ class Agent:
         return ToolResult(ok=True, output=(
             f"# {entry.label()} is already in this conversation (unchanged "
             f"since it was shown above) — not re-sent. Scroll up to the earlier "
-            f"result for its contents."))
+            f"result for its contents."),
+            # So the trace can say "already in context" rather than reporting a
+            # one-line read, which looks like a truncated file.
+            meta={"ledger_hit": True})
 
     def _ledger_note(self, result: ToolResult, message_id: str = "") -> None:
         info = (result.meta or {}).get("read")

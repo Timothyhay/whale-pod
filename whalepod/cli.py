@@ -189,6 +189,15 @@ class TurnRunner:
         self.out_tokens = 0
         self._in_reasoning = False
         self._wrote_text = False
+        self.show_tools = session.cfg.show_tool_calls and not session.quiet
+        # Decoration is for a terminal. Piped stdout gets the answer text and
+        # nothing else, so `whalepod ask … > out.md` stays usable.
+        self._decorate = R.is_tty()
+        self._answer_open = False     # inside a streamed block of answer text
+        self._at_bol = False          # ...and at the start of one of its lines
+        self._printed = False         # something (a trace line) is above us
+        self._last_call = None        # the call whose line we printed last
+        self._inflight = 0            # tool calls started but not yet finished
 
     def sink(self, delta) -> None:
         from .core.tokenizer import estimate_tokens
@@ -199,16 +208,98 @@ class TurnRunner:
         if delta.content:
             if self._in_reasoning:
                 self._in_reasoning = False
-            if not self._wrote_text:
-                self.status.clear()
-                self._wrote_text = True
+            self._open_answer()
             # Written straight through: this is the token-by-token stream, and
             # buffering it until the turn ended was the single biggest reason
             # the old REPL felt dead while the model was talking.
-            sys.stdout.write(delta.content)
+            self._write_answer(delta.content)
             sys.stdout.flush()
             self.out_tokens += estimate_tokens(delta.content)
             self._paint("streaming")
+
+    # -- answer block ------------------------------------------------------
+    # An answer is not one block per turn: the model talks, calls tools, then
+    # talks again. Each stretch of text is opened and closed around the trace so
+    # the two never run into each other on one line.
+    def _open_answer(self) -> None:
+        if self._answer_open:
+            return
+        self.status.clear()
+        if self._decorate:
+            if self._printed:
+                sys.stdout.write("\n")      # breathing room after a trace
+            sys.stdout.write(R.answer_open())
+        self._answer_open = True
+        self._at_bol = False
+        self._wrote_text = True
+
+    def _write_answer(self, text: str) -> None:
+        """Write streamed text, keeping continuation lines under the gutter.
+
+        The indent is applied lazily, only once a line actually has content, so a
+        stream that ends on a newline does not leave trailing whitespace behind.
+        """
+        if not self._decorate:
+            sys.stdout.write(text)
+            if text:
+                self._at_bol = text.endswith("\n")
+            return
+        buf = []
+        for i, part in enumerate(text.split("\n")):
+            if i:
+                buf.append("\n")
+                self._at_bol = True
+            if part:
+                if self._at_bol:
+                    buf.append(R.GUTTER)
+                    self._at_bol = False
+                buf.append(part)
+        sys.stdout.write("".join(buf))
+
+    def _close_answer(self) -> None:
+        if not self._answer_open:
+            return
+        # Only if the reply ended mid-line. Models usually end on a newline, and
+        # the old code's unconditional "\n" turned that into a blank line before
+        # every trace line and every prompt.
+        if not self._at_bol:
+            sys.stdout.write("\n")
+        sys.stdout.flush()
+        self._answer_open = False
+        self._printed = True
+
+    # -- tool trace --------------------------------------------------------
+    def on_tool(self, ev) -> None:
+        """Print one line for a tool call and one for its result."""
+        if not self.show_tools:
+            return
+        self.status.clear()
+        self._close_answer()
+        here = (ev.name, R.tool_target(ev.name, ev.args))
+        if ev.phase == "start":
+            self._inflight += 1
+            # A batch of reads is dispatched concurrently and finishes in
+            # whatever order the filesystem returns. A bare result line is only
+            # unambiguous when exactly one call is outstanding and its line is
+            # the one directly above; otherwise the result has to name itself.
+            self._last_call = here if self._inflight == 1 else None
+            self._trace(R.render_tool_call(ev.name, ev.args),
+                        R.tool_call_text(ev.name, ev.args))
+            return
+        label = "" if here == self._last_call else f"{ev.name}({here[1]})"
+        self._inflight = max(0, self._inflight - 1)
+        self._last_call = None
+        self._trace(
+            R.render_tool_result(ev.name, ev.result, ev.duration, label),
+            R.tool_result_text(ev.name, ev.result, ev.duration, label))
+
+    def _trace(self, styled, plain: str) -> None:
+        """Trace to stdout when we own the terminal, stderr when we do not."""
+        if self.s.console:
+            self.s.console.print(styled)
+        else:
+            click.echo(plain, err=True)
+        self._printed = True
 
     def _paint(self, state: str) -> None:
         if self._wrote_text and state == "streaming":
@@ -223,6 +314,7 @@ class TurnRunner:
     async def confirm(self, req) -> str:
         """Show the diff that is about to be written and ask."""
         self.status.clear()
+        self._close_answer()
         s = self.s
         if s.console:
             from rich.panel import Panel
@@ -243,24 +335,31 @@ class TurnRunner:
         from .endpoints.base import EndpointError
         s = self.s
         s.agent.stream_sink = self.sink
+        s.agent.tool_sink = self.on_tool
         s.agent.config.confirm_callback = self.confirm
         try:
             text = await s.agent.run_turn(user_text, add_user=add_user)
         except EndpointError as e:
             self.status.clear()
+            self._close_answer()
             s.echo(f"endpoint error: {e}", "red")
             return ""
         except KeyboardInterrupt:
             self.status.clear()
+            self._close_answer()
             s.echo("(interrupted)", "yellow")
             return ""
         finally:
             self.status.clear()
         if self._wrote_text:
-            sys.stdout.write("\n")
-            sys.stdout.flush()
+            self._close_answer()
         elif text:
-            s.echo(text)
+            # Nothing streamed (a non-streaming provider, or a reply that only
+            # arrived at the end) — print it through the same gutter so it still
+            # reads as the assistant's turn.
+            self._open_answer()
+            self._write_answer(text)
+            self._close_answer()
         return text
 
     def report(self) -> None:
@@ -390,6 +489,7 @@ def config():
                      for k, v in cfg.endpoint.__dict__.items()},
         "mode": cfg.default_mode,
         "sandbox": cfg.sandbox,
+        "show_tool_calls": cfg.show_tool_calls,
         "model": cfg.resolved_model(),
         "context_window": cfg.context_window,
         # Resolved, not raw: max_tokens is usually 0 ("auto"), and the whole
@@ -544,6 +644,11 @@ def _handle_command(session: Session, user: str) -> bool:
         session.echo(f"Saved to {p} — restart to apply", "dim")
     elif cmd == "/mode":
         session.echo(f"mode: {session.agent.toggle_mode()}", "yellow")
+    elif cmd == "/trace":
+        # Read by the next turn's TurnRunner, so this takes effect immediately.
+        session.cfg.show_tool_calls = not session.cfg.show_tool_calls
+        session.echo(f"tool-call trace: "
+                     f"{'on' if session.cfg.show_tool_calls else 'off'}", "yellow")
     elif cmd == "/stats":
         st = session.mm.stats()
         ctx = R.context_line(st, session.cfg.resolved_model(),

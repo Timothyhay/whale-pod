@@ -18,6 +18,7 @@ from __future__ import annotations
 import shutil
 import sys
 import time
+from datetime import datetime
 
 try:
     from rich import box
@@ -58,6 +59,7 @@ HELP_ITEMS = [
     ("/stats",     "context + measured cache telemetry"),
     ("/context",   "what files are currently loaded"),
     ("/refresh",   "rescan the repo map"),
+    ("/backups",   "backup points on a timeline (all · prune)"),
     ("/rollback",  "undo this session's writes"),
     ("/clear",     "start a fresh conversation"),
     ("/quit",      "exit"),
@@ -362,6 +364,189 @@ def render_stats(context_line_text: str, detail_lines: list[str]):
         body.append(line, style="dim")
     return Panel(body, title="stats", border_style="blue",
                  title_align="left", padding=(0, 1))
+
+
+# ---------------------------------------------------------------- backups
+# The backup root is a flat pile of timestamped directories, which `ls` prints as
+# 75 indistinguishable names. Drawn as a timeline, newest at the top, the four
+# things a rollback decision needs sit on one line: which point to name, what it
+# holds, which project it came from, and whether retention is about to reclaim it.
+#
+#     ╷ now
+#     ● 20260807-034412  2 files ·  1.3 KB · 4m ago    WhalePod
+#     │  ├ whalepod/cli.py
+#     │  └ whalepod/config.py
+#     ┊ 4 days earlier
+#     × 20260802-191631  1 file  ·  0.2 KB · 5d ago    WhalePod   older than 14d
+#     ╵ 65 older points hidden · /backups all
+#
+# Marks are all single-width on purpose: an emoji-presentation glyph like ⌛ is
+# drawn double-width by most terminals, which shifts every column after it out of
+# alignment on exactly the rows that matter most.
+MARK_KEPT = "●"          # backups present, restorable
+MARK_ROLLED_BACK = "○"   # already restored from
+MARK_EXPIRING = "×"      # past retention; the next sweep reclaims it
+MARK_ORPHAN = "◌"        # directory with no manifest (killed mid-write)
+MAX_FILE_LINES = 3       # per point; the rest collapse to "+N more"
+
+
+def _ago(when: datetime, now: datetime = None) -> str:
+    now = now or datetime.now()
+    secs = max(0.0, (now - when).total_seconds())
+    if secs < 60:
+        return f"{int(secs)}s ago"
+    if secs < 3600:
+        return f"{int(secs // 60)}m ago"
+    if secs < 86_400:
+        return f"{int(secs // 3600)}h ago"
+    if secs < 86_400 * 14:
+        return f"{int(secs // 86_400)}d ago"
+    return f"{int(secs // (86_400 * 7))}w ago"
+
+
+def _size(n: int) -> str:
+    if n < 1024:
+        return f"{n} B"
+    if n < 1024 ** 2:
+        return f"{n / 1024:.1f} KB"
+    return f"{n / 1024 ** 2:.1f} MB"
+
+
+def retention_line(retention) -> str:
+    """The policy in words. Says so explicitly when nothing is capped."""
+    if retention is None:
+        return "retention: not applied"
+    bits = []
+    if retention.max_sessions:
+        bits.append(f"{retention.max_sessions} newest")
+    if retention.max_age_days:
+        bits.append(f"{retention.max_age_days:g} days")
+    if retention.max_total_mb:
+        bits.append(f"{retention.max_total_mb:g} MB")
+    return "keep " + " · ".join(bits) if bits else "no limits set (grows forever)"
+
+
+def _mark(info):
+    if info.expires:
+        return MARK_EXPIRING, "yellow"
+    if not info.has_manifest:
+        return MARK_ORPHAN, "red"
+    if info.rolled_back:
+        return MARK_ROLLED_BACK, "dim"
+    return MARK_KEPT, "green"
+
+
+def _files_text(info) -> str:
+    if not info.has_manifest:
+        return "no manifest"
+    return f"{info.files} file{'' if info.files == 1 else 's'}"
+
+
+def backup_rows(infos, base, retention=None, limit=None) -> list:
+    """The timeline as rows of ``(text, style)`` segments.
+
+    Split from the renderers so the plain-text and Rich versions cannot draw two
+    different pictures — the art is decided once, here, and only the colour is
+    applied twice.
+    """
+    rows = [
+        [("🐋 backup points", "bold cyan"), (f" · {base}", "dim")],
+    ]
+    n = len(infos)
+    rows.append([(f"   {n} point{'' if n == 1 else 's'} · "
+                  f"{_size(sum(i.bytes for i in infos))} · "
+                  f"{retention_line(retention)}", "dim")])
+    expiring = [i for i in infos if i.expires]
+    if expiring:
+        rows.append([(f"   {len(expiring)} past retention", "yellow"),
+                     (" — reclaimed by the next write, or now with "
+                      "`/backups prune`", "dim")])
+    if not infos:
+        rows.append([("   nothing recorded yet — snapshots appear here the first "
+                      "time a session writes a file", "dim")])
+        return rows
+
+    shown = infos if limit is None else infos[:max(0, limit)]
+    w_files = max(len(_files_text(i)) for i in shown)
+    w_size = max(len(_size(i.bytes)) for i in shown)
+    w_age = max(len(_ago(i.when)) for i in shown)
+
+    rows.append([("", "")])
+    rows.append([("  ╷", "dim blue"), (" now", "dim")])
+    prev = None
+    for info in shown:
+        if prev is not None:
+            gap_days = int((prev.when - info.when).total_seconds() // 86_400)
+            if gap_days >= 1:
+                rows.append([("  ┊", "dim blue"),
+                             (f" {gap_days} day{'' if gap_days == 1 else 's'} "
+                              f"earlier", "dim")])
+        mark, mark_style = _mark(info)
+        stale = bool(info.expires or info.rolled_back)
+        line = [
+            (f"  {mark} ", mark_style),
+            (info.session, "dim" if stale else "bold"),
+            (f"  {_files_text(info):<{w_files}} · {_size(info.bytes):>{w_size}}"
+             f" · {_ago(info.when):<{w_age}}", "dim"),
+            (f"  {info.root.name if info.root else '?'}", "cyan"),
+        ]
+        if info.rolled_back:
+            line.append(("  rolled back", "dim"))
+        if info.expires:
+            line.append((f"  {info.expires}", "yellow"))
+        rows.append(line)
+
+        head = info.paths[:MAX_FILE_LINES]
+        extra = len(info.paths) - len(head)
+        for j, p in enumerate(head):
+            last = not extra and j == len(head) - 1
+            rows.append([(f"  │  {'└' if last else '├'} ", "dim blue"),
+                         (p, "dim")])
+        if extra:
+            rows.append([("  │  └ ", "dim blue"), (f"+{extra} more", "dim")])
+        prev = info
+
+    hidden = len(infos) - len(shown)
+    if hidden:
+        rows.append([("  ╵", "dim blue"),
+                     (f" {hidden} older point{'' if hidden == 1 else 's'} hidden"
+                      f" · `/backups all`", "dim")])
+    else:
+        rows.append([("  ╵", "dim blue"), (" oldest", "dim")])
+    return rows
+
+
+def backups_text(rows) -> str:
+    return "\n".join("".join(seg for seg, _ in row) for row in rows)
+
+
+def render_backups(infos, base, retention=None, limit=None):
+    """Styled timeline for a Rich console, or the same art in plain text.
+
+    Not wrapped in a ``Panel``: the list can run to hundreds of lines with
+    ``/backups all``, and a border around that only steals width from the paths.
+    """
+    rows = backup_rows(infos, base, retention, limit)
+    if not _HAS_RICH:
+        return backups_text(rows)
+    body = Text()
+    for i, row in enumerate(rows):
+        if i:
+            body.append("\n")
+        for seg, style in row:
+            body.append(seg, style=style or None)
+    return body
+
+
+def render_prune(removed, base) -> str:
+    """What a sweep reclaimed, or that there was nothing to reclaim."""
+    if not removed:
+        return "backups: nothing past retention"
+    lines = [f"backups: reclaimed {len(removed)} point"
+             f"{'' if len(removed) == 1 else 's'} from {base}"]
+    for d, reason in reversed(removed):        # newest first, like the timeline
+        lines.append(f"  × {d.name}  ({reason})")
+    return "\n".join(lines)
 
 
 # ------------------------------------------------------- transient status

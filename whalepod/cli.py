@@ -8,6 +8,7 @@ Commands:
   whalepod context-stats   context-zone token estimate
   whalepod tokens <text>   token estimate for text
   whalepod rollback        restore pre-edit snapshots (works across processes)
+  whalepod backups         draw the backup timeline / apply retention
   whalepod config          show resolved config
 
 Two structural notes about the REPL:
@@ -26,6 +27,7 @@ import asyncio
 import json
 import sys
 import time
+from dataclasses import asdict
 from pathlib import Path
 from typing import Optional
 
@@ -83,9 +85,11 @@ class Session:
         )
         self.ledger = ContextLedger()
         self._instructions_from = ""     # set by _project_instructions()
+        self._pruned_reported = False    # see note_pruned()
         sandbox = "yes" if auto_yes else cfg.sandbox
         self.registry = ToolRegistry(self.root, sandbox_mode=sandbox,
-                                     ledger=self.ledger)
+                                     ledger=self.ledger,
+                                     retention=cfg.backups)
         self.mm = MessageManager(window=cfg.context_window,
                                  prune_at=cfg.prune_at, prune_to=cfg.prune_to,
                                  reserve_tokens=cfg.reserve_tokens)
@@ -155,6 +159,22 @@ class Session:
             return
         self.registry.repo_index = idx
         self.mm.set_repo_map(repo_map_section(idx.render()))
+
+    def note_pruned(self) -> None:
+        """Say once that old backups were reclaimed.
+
+        The sweep runs inside the first write of the session, where printing from
+        would land in the middle of a tool trace. Deleting a user's rollback
+        points silently is worse than one dim line, so it is reported at the end
+        of the turn that caused it.
+        """
+        pruned = getattr(self.registry.snapshots, "pruned", None)
+        if not pruned or self._pruned_reported:
+            return
+        self._pruned_reported = True
+        self.notice(f"backups: reclaimed {len(pruned)} point"
+                    f"{'' if len(pruned) == 1 else 's'} past retention "
+                    f"({R.retention_line(self.cfg.backups)}) — /backups")
 
     # -- output ------------------------------------------------------------
     def notice(self, text: str) -> None:
@@ -366,6 +386,7 @@ class TurnRunner:
         s = self.s
         st = s.mm.stats()
         s.notice(R.usage_line(st.usage))
+        s.note_pruned()
         if self.reasoning_tokens and not self.show_reasoning:
             s.notice(f"reasoning: ~{self.reasoning_tokens:,} tokens (hidden)")
 
@@ -498,13 +519,64 @@ def config():
                      "max_symbols": cfg.repo_map.max_symbols,
                      "languages": cfg.repo_map.languages,
                      "exclude": cfg.repo_map.exclude},
+        "backups": asdict(cfg.backups),
         "loaded_from": cfg._loaded_from,
     }, indent=2))
 
 
+# --------------------------------------------------------- backups ---
+DEFAULT_BACKUP_LIMIT = 10
+
+
+def _echo_rich(renderable) -> None:
+    """Print a Rich renderable when we own the terminal, plain text otherwise."""
+    if R.use_rich():
+        R.make_console().print(renderable)
+    else:
+        click.echo(renderable if isinstance(renderable, str) else str(renderable))
+
+
+def show_backups(cfg: Config, limit: Optional[int] = DEFAULT_BACKUP_LIMIT,
+                 echo=None) -> None:
+    """Draw the backup timeline. Shared by `whalepod backups` and /backups so
+    the REPL and the CLI cannot end up describing the same directory two ways."""
+    from .sandbox.snapshot import backup_root, describe_sessions
+    base = backup_root()
+    infos = describe_sessions(base, cfg.backups)
+    (echo or _echo_rich)(R.render_backups(infos, base, cfg.backups, limit))
+
+
+def prune_backups(cfg: Config, keep=()) -> str:
+    """Apply retention now, and report what it reclaimed.
+
+    ``keep`` is the live session's dir when called from the REPL. Today's policy
+    would never pick the newest point anyway, but the protection belongs at the
+    call site rather than in an assumption about which limits exist.
+    """
+    from .sandbox.snapshot import backup_root, prune
+    base = backup_root()
+    return R.render_prune(prune(base, cfg.backups, keep=keep), base)
+
+
+@main.command("backups")
+@click.option("--all", "show_all", is_flag=True, help="every point, not the newest few")
+@click.option("--limit", default=DEFAULT_BACKUP_LIMIT, show_default=True,
+              help="how many points to draw")
+@click.option("--prune", "do_prune", is_flag=True,
+              help="apply retention now instead of waiting for the next write")
+def backups(show_all, limit, do_prune):
+    """Show recorded backup points as a timeline (and optionally prune them)."""
+    _setup_encoding()
+    cfg = load_config()
+    if do_prune:
+        click.echo(prune_backups(cfg))
+    show_backups(cfg, None if show_all else limit)
+
+
 @main.command("rollback")
 @click.option("--session", default="", help="session id (default: most recent)")
-@click.option("--list", "do_list", is_flag=True, help="list recorded sessions")
+@click.option("--list", "do_list", is_flag=True,
+              help="list recorded points (same view as `whalepod backups`)")
 def rollback(session, do_list):
     """Restore files written by a previous WhalePod session.
 
@@ -514,15 +586,9 @@ def rollback(session, do_list):
     """
     from .sandbox.snapshot import SnapshotManager, backup_root
     if do_list:
-        found = SnapshotManager.sessions()
-        if not found:
-            click.echo(f"no snapshot sessions under {backup_root()}")
-            return
-        for d in reversed(found):
-            mgr = SnapshotManager.load(d)
-            flag = " (rolled back)" if mgr.rolled_back else ""
-            click.echo(f"{d.name}  {len(mgr.snapshots)} file(s)  "
-                       f"{mgr.root or '?'}{flag}")
+        # Delegates to the one lister rather than keeping a second, plainer one:
+        # the two had already drifted (this one never showed size or retention).
+        show_backups(load_config(), limit=None)
         return
     if session:
         mgr = SnapshotManager.load(backup_root() / session)
@@ -670,6 +736,16 @@ def _handle_command(session: Session, user: str) -> bool:
         session.install_repo_map()
         idx = session.registry.repo_index
         session.echo(f"repo map: {idx.symbol_count if idx else 0} symbols", "dim")
+    elif cmd == "/backups":
+        arg = (user.split()[1].lstrip("-").lower()
+               if len(user.split()) > 1 else "")
+        if arg in ("prune", "clean", "gc"):
+            session.echo(prune_backups(
+                session.cfg, keep=[session.registry.snapshots.session_dir]),
+                "dim")
+        limit = None if arg in ("all", "a", "prune", "clean", "gc") \
+            else DEFAULT_BACKUP_LIMIT
+        show_backups(session.cfg, limit, echo=session.echo)
     elif cmd == "/rollback":
         for line in session.registry.rollback():
             session.echo(f"  {line}", "dim")

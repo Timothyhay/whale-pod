@@ -164,10 +164,12 @@ ALL_TOOLS = READ_TOOLS + WRITE_TOOLS
 
 class ToolRegistry:
     def __init__(self, root: Path, sandbox_mode: str = "confirm",
-                 ledger=None, snapshots: Optional[SnapshotManager] = None):
+                 ledger=None, snapshots: Optional[SnapshotManager] = None,
+                 retention=None):
         self.root = Path(root).resolve()
         self.guard = SandboxGuard(self.root, mode=sandbox_mode)
-        self.snapshots = snapshots or SnapshotManager(root=self.root)
+        self.snapshots = snapshots or SnapshotManager(root=self.root,
+                                                     retention=retention)
         self.repo_index = None      # set by the CLI after the initial scan
         self.ledger = ledger        # ContextLedger, set by the agent
         # A readonly sandbox refuses every write, so advertising the write tools

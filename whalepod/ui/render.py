@@ -199,7 +199,7 @@ def render_stats(context_line_text: str, detail_lines: list[str]):
 
 
 # ------------------------------------------------------- transient status
-_FRAMES = ("🐋", "🐳", "🌊", "🫧", "🐚", "🐟", "✨", "💫")
+_FRAMES = ("🐋", "🐳", "🌊", "🫧", "✨", "💫")
 
 
 class StatusLine:

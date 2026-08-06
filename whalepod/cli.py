@@ -35,24 +35,7 @@ from . import __version__
 from .config import Config, load_config, save_global_config
 from .ui import render as R
 
-WELCOME = r"""
- __      __ _           _      ___          _
- \ \    / /| |_  __ _  | | ___| _ \___  __| |
-  \ \/\/ / | ' \/ _` | | |/ -_)  _/ _ \/ _` |
-   \_/\_/  |_||_\__,_| |_|\___|_| \___/\__,_|
-"""
-
-HELP_TEXT = """\
-/help                 this message
-/config               configure endpoint + API key
-/mode                 toggle thinking · instant
-/stats                context + measured cache telemetry
-/context              what files are currently loaded (context ledger)
-/refresh              rescan the repo map
-/rollback             undo this session's writes
-/clear                start a fresh conversation (keeps the repo map)
-/quit                 exit
-"""
+_PROMPT = "\n\033[1;36m❯\033[0m "
 
 
 def _setup_encoding() -> None:
@@ -506,25 +489,28 @@ def repl():
     except ValueError as e:
         raise SystemExit(f"{e}")
 
-    click.echo(WELCOME)
-    session.echo(f"WhalePod v{__version__} · {cfg.resolved_model()} · "
-                 f"{session.root}", "cyan")
     st = session.mm.stats()
-    session.echo(f"stable prefix ~{st.stable_tokens:,} tok "
-                 f"({session.registry.repo_index.symbol_count if session.registry.repo_index else 0}"
-                 f" symbols mapped) · /help for commands", "dim")
+    session.echo(R.render_startup(
+        __version__, cfg.resolved_model(), str(session.root),
+        st.stable_tokens,
+        session.registry.repo_index.symbol_count if session.registry.repo_index else 0))
 
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
+    first = True
     try:
         while True:
+            if not first:
+                session.echo(R.render_divider())
+            first = False
             try:
-                user = input("\n❯ ")
+                user = input(_PROMPT)
             except (EOFError, KeyboardInterrupt):
                 click.echo("")
                 break
             user = user.strip()
             if not user:
+                first = True   # don't add divider for blank input
                 continue
             if user in ("/quit", "/exit", "/q"):
                 break
@@ -535,7 +521,6 @@ def repl():
                 loop.run_until_complete(runner.run(user))
             except KeyboardInterrupt:
                 session.echo("(interrupted)", "yellow")
-                # Leave the log valid for the next request.
                 session.mm.close_open_tool_calls("(interrupted by user)")
             runner.report()
     finally:
@@ -552,7 +537,7 @@ def _handle_command(session: Session, user: str) -> bool:
         return False
     cmd = user.split()[0]
     if cmd == "/help":
-        session.echo(HELP_TEXT)
+        session.echo(R.render_help())
     elif cmd == "/config":
         _do_auth_flow(session.cfg)
         p = save_global_config(session.cfg)
@@ -561,17 +546,18 @@ def _handle_command(session: Session, user: str) -> bool:
         session.echo(f"mode: {session.agent.toggle_mode()}", "yellow")
     elif cmd == "/stats":
         st = session.mm.stats()
-        session.echo(R.context_line(st, session.cfg.resolved_model(),
-                                    session.agent.mode, session.cfg.sandbox))
-        session.echo(R.usage_line(st.usage), "dim")
+        ctx = R.context_line(st, session.cfg.resolved_model(),
+                             session.agent.mode, session.cfg.sandbox)
+        detail = [R.usage_line(st.usage)]
         if st.session_usage:
-            session.echo(f"session: {R.usage_line(st.session_usage)}", "dim")
+            detail.append(f"session: {R.usage_line(st.session_usage)}")
         if st.compactions:
-            session.echo(f"context compacted {st.compactions} time(s) this "
-                         f"session", "dim")
+            detail.append(f"context compacted {st.compactions} time(s) this "
+                          f"session")
         if st.prunes:
-            session.echo(f"context pruned (no summary) {st.prunes} time(s) this "
-                         f"session", "dim")
+            detail.append(f"context pruned (no summary) {st.prunes} time(s) "
+                          f"this session")
+        session.echo(R.render_stats(ctx, detail))
     elif cmd == "/context":
         session.echo(session.ledger.stats_line(), "dim")
         session.echo(session.ledger.summary(), "dim")

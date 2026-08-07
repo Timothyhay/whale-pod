@@ -45,7 +45,7 @@ prediction tracks the server to **5.5 points** MAE.
 
 The effect holds across conversation lengths: 6 turns → 91.7%, 12 → 94.7%, 18 →
 95.0%. At the V4 Flash token price that's roughly **$0.02/session** in prompt
-cost. [Full report →](docs/bench_eval.md)
+cost. 
 
 Two conditions this rests on: **pin the provider** (a prefix cache is state on
 *one machine* — unpinned routing measured 0.4% hits vs 98.4% pinned) and **put

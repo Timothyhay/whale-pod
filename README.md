@@ -1,7 +1,7 @@
 # 🐋 WhalePod
 
 <p align="center">
-  <img src="banner.png" alt="WhalePod banner" width="600">
+  <img src="banner.png" alt="WhalePod banner" width="800">
 </p>
 
 <p align="center">

@@ -40,7 +40,7 @@ from typing import Optional
 from ..endpoints.base import ChatRequest, Message
 
 SUMMARY_SYSTEM = """\
-You are compacting the transcript of a coding session so that work can continue \
+You are compacting the transcript of a working session so that work can continue \
 in a smaller context window. You are not answering the user; you are writing the \
 notes your successor will rely on.
 

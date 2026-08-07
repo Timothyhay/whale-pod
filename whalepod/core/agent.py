@@ -191,6 +191,39 @@ class Agent:
             note += f"; {forgotten} loaded file range(s) can be re-read now"
         self._notice(note)
 
+    async def compact_now(self, keep_turns: int = 1):
+        """Manual compaction: summarise all but the last ``keep_turns`` turns.
+
+        Unlike :meth:`_compact` this is user-triggered via ``/compact``, so it
+        does not wait for the context window to fill.  Everything else — the
+        serialiser, the summary prompt, the cache discipline — is shared so
+        that manual and automatic compaction produce the same artifact and the
+        same cache behaviour.
+        """
+        idx, turns, tokens, ids, mid = self.mm.plan_manual_reduction(
+            keep_turns)
+        if idx <= 0:
+            return None
+        if self._compactor is None:
+            self._compactor = Compactor(
+                self.endpoint, self.config.model,
+                max_tokens=self.config.compaction_max_tokens)
+        self._notice(f"compacting {turns} old turn(s) (~{tokens:,} tokens)…")
+        summary = await self._compactor.summarize(self.mm.history[:idx])
+        if not summary:
+            self._notice("compaction produced no summary; falling back to "
+                         "dropping the oldest turns")
+            return None
+        evt = self.mm.compact(summary_message(summary, turns, tokens),
+                              idx, turns, tokens, ids, mid)
+        if evt:
+            forgotten = self.ledger.forget_messages(evt.dropped_tool_call_ids)
+            note = evt.describe()
+            if forgotten:
+                note += f"; {forgotten} loaded file range(s) can be re-read now"
+            self._notice(note)
+        return evt
+
     async def _compact(self):
         """Summarize the slice that is about to be cut. None if not possible."""
         idx, turns, tokens, ids, mid = self.mm.plan_reduction()

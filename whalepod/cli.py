@@ -573,6 +573,11 @@ def _handle_command(session: Session, user: str) -> bool:
         session.ledger.entries.clear()
         session.echo(f"cleared {n} message(s); repo map and prompt kept "
                      f"(they are still a cache hit)", "dim")
+    elif cmd == "/compact":
+        loop = asyncio.get_event_loop()
+        evt = loop.run_until_complete(session.agent.compact_now())
+        if evt is None:
+            session.echo("nothing to compact (need at least 2 turns)", "dim")
     else:
         session.echo(f"unknown command {cmd} — /help", "red")
     return True

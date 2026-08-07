@@ -256,6 +256,27 @@ class MessageManager:
     def needs_reduction(self) -> bool:
         return self.estimated_total() > self.reduction_limit()
 
+    def plan_manual_reduction(self, keep_turns: int = 1
+                              ) -> tuple[int, int, int, list[str], bool]:
+        """Cut point for a user-requested compaction, keeping the last N turns.
+
+        Like :meth:`plan_reduction` but does not depend on the window fill
+        level — it always compacts everything before the last ``keep_turns``
+        turns, regardless of how many tokens are in flight.
+        """
+        if len(self.history) <= 1:
+            return 0, 0, 0, [], False
+        user_indices = [i for i, m in enumerate(self.history)
+                        if m.role == "user"]
+        if len(user_indices) <= keep_turns:
+            return 0, 0, 0, [], False
+        idx = user_indices[-keep_turns]
+        turns = len(user_indices) - keep_turns
+        tokens = sum(self._hist_tokens[:idx])
+        ids = [m.tool_call_id for m in self.history[:idx]
+               if m.role == "tool" and m.tool_call_id]
+        return idx, max(turns, 1), tokens, ids, False
+
     def plan_reduction(self) -> tuple[int, int, int, list[str], bool]:
         """Where to cut, without cutting: ``(index, turns, tokens, ids, mid)``.
 

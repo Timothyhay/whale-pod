@@ -59,6 +59,7 @@ HELP_ITEMS = [
     ("/refresh",   "rescan the repo map"),
     ("/rollback",  "undo this session's writes"),
     ("/clear",     "start a fresh conversation"),
+    ("/compact",   "summarise old turns, keep the latest"),
     ("/quit",      "exit"),
 ]
 

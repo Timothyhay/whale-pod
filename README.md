@@ -17,7 +17,7 @@ against DeepSeek V4's official API (up to 37 requests each, 1M window):
 | | |
 |---|---|
 | Cache hit rate | **median 94.7%** (P10=93.7%, P90=95.3%) |
-| Prompt cost | $0.10828 uncached → **$0.02020** offline-estimated, per session |
+| Prompt cost | $0.082 uncached → **~$0.020** with cache (74% saved) |
 | Hit rate over time | first 3 requests 87.1% → **last 3 98.2%** |
 | Starting context | **~15,269 tokens** — a symbol map, not the repo |
 | Offline prediction error | **mean absolute error 5.5 points** (was 7.0 with the old tokenizer) |
@@ -73,8 +73,7 @@ additional experiments at 6 turns (**91.7%**) and 18 turns (**95.0%**).
 
 DeepSeek's official API delivers better cache consistency than an aggregator:
 no unexplained collapses at arbitrary points, and the sawtooth pattern is
-exactly what the offline model predicts. **A hit rate is a cost number, not a
-correctness number**, so nothing in the agent assumes the cache is there.
+exactly what the offline model predicts.
 
 ![Live session prompt tokens: served from cache vs billed fresh](bench/results/live_tokens_split.svg)
 
@@ -83,16 +82,28 @@ cache and only 91,639 were billed fresh. Across 22 sessions at the V4 Flash
 token price that is roughly **$0.02/session** in prompt cost — less than a
 single request would cost without the cache.
 
+The effect is durable across conversation lengths (same session script, different
+`--turns`):
+
+| Turns | Sessions | Median hit rate | P10–P90 spread |
+|:---|---:|---:|---:|
+| 6 | 5 | 91.7% | 1.4 pts |
+| 12 | 22 | 94.7% | 1.6 pts |
+| 18 | 3 | 95.0% | 0.6 pts |
+
+12 turns is the sweet spot for benchmarking: enough for the prefix to build to
+its full potential, but short enough to run 22 sessions in under an hour.
+
 Two conditions this rests on, both learned the hard way:
 **pin the provider** (a prefix cache is state on one machine — unpinned routing
 measured 0.4% against 98.4% pinned), and **put the volatile part last**.
 
 The remaining case is a forced context reduction, which necessarily breaks the
-prefix. It costs one request and then recovers: live at a 63,000-token window
-(`live_prune.svg`), the prune landed on request #18 at 0.2% and #19 was back to
-95.0%, ending the session at 85.1% overall. Offline at 52,000
-(`prune_recovery.svg`), one prune still leaves 92.4% of the session's prefix
-reusable. That is the whole price of reduction, measured.
+prefix. The offline bench at a 45,000-token window (
+[`prune_recovery.svg`](bench/results/prune_recovery.svg)) triggers 4 prunes over
+the session, each followed by prefix recovery: one request drops to near zero,
+the next is back to ~90%. The session still ends at **88.8%** reusable prefix
+overall — that is the whole price of reduction, measured.
 
 ---
 

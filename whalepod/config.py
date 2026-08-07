@@ -17,6 +17,11 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Optional
 
+# The retention policy is defined next to the code that enforces it, and reused
+# here verbatim rather than mirrored: two dataclasses with the same three fields
+# would drift, and the config file would start describing limits nothing reads.
+from .sandbox.snapshot import Retention
+
 CONFIG_DIR_ENV = "WHALEPOD_CONFIG_DIR"
 DEFAULT_CONFIG_DIR = Path.home() / ".whalepod"
 DEFAULT_CONFIG_FILE = "config.json"
@@ -92,6 +97,10 @@ class Config:
     sandbox: str = "confirm"              # confirm | readonly | none | yes
     repo_map: RepoMapConfig = field(default_factory=RepoMapConfig)
     theme: str = "whale"
+    # Print each tool call and its result as the turn runs. On by default: a turn
+    # that reads six files and runs the tests is mostly work the model never
+    # mentions in its prose, and without the trace the user cannot see it happen.
+    show_tool_calls: bool = True
     history_file: str = ""                # if empty, default to config dir / history
     context_window: int = 1_000_000       # DeepSeek V4
     # Pruning thresholds, as fractions of the window. These replace the old
@@ -108,6 +117,9 @@ class Config:
     # small call per reduction; falls back to plain dropping if it fails.
     compaction: bool = True
     compaction_max_tokens: int = 2_000
+    # How much pre-edit snapshot history to keep under ~/.whalepod/backups.
+    # Enforced once per session that writes a file; see sandbox/snapshot.py.
+    backups: Retention = field(default_factory=Retention)
     _loaded_from: list[str] = field(default_factory=list, repr=False)
 
     # -- helpers ---------------------------------------------------------
@@ -205,6 +217,10 @@ def _from_dict(cfg: Config, data: dict) -> Config:
             for rk, rv in v.items():
                 if hasattr(cfg.repo_map, rk):
                     setattr(cfg.repo_map, rk, rv)
+        elif k == "backups" and isinstance(v, dict):
+            for bk, bv in v.items():
+                if hasattr(cfg.backups, bk):
+                    setattr(cfg.backups, bk, bv)
         elif hasattr(cfg, k):
             setattr(cfg, k, v)
     return cfg
@@ -217,12 +233,14 @@ def save_global_config(cfg: Config) -> Path:
         "sandbox": cfg.sandbox,
         "repo_map": asdict(cfg.repo_map),
         "theme": cfg.theme,
+        "show_tool_calls": cfg.show_tool_calls,
         "context_window": cfg.context_window,
         "prune_at": cfg.prune_at,
         "prune_to": cfg.prune_to,
         "reserve_tokens": cfg.reserve_tokens,
         "compaction": cfg.compaction,
         "compaction_max_tokens": cfg.compaction_max_tokens,
+        "backups": asdict(cfg.backups),
     }
     gdir = config_dir()
     gdir.mkdir(parents=True, exist_ok=True)

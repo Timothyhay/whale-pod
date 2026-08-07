@@ -239,6 +239,89 @@ class TestToolRobustness(AgentCase):
         self.assertEqual(sorted(order), ["a.py", "b.py", "c.py"])
 
 
+# ------------------------------------------------------------ tool events
+class TestToolEvents(AgentCase):
+    """What the UI is told about tool calls while a turn runs."""
+
+    def observe(self, agent):
+        events: list = []
+        agent.tool_sink = events.append
+        return events
+
+    def test_every_call_is_bracketed_by_a_start_and_an_end(self):
+        self.write("f.py", "x = 1\n")
+        agent = self.build([
+            Turn(tool_calls=[call("c1", "read_file", '{"path": "f.py"}')]),
+            Turn(content="ok"),
+        ])
+        events = self.observe(agent)
+        self.run_turn(agent)
+        self.assertEqual([(e.phase, e.name) for e in events],
+                         [("start", "read_file"), ("end", "read_file")])
+        self.assertEqual(events[0].args, {"path": "f.py"})
+        self.assertTrue(events[1].result.ok)
+
+    def test_a_call_that_never_reaches_a_tool_is_still_traced(self):
+        """Broken JSON and unknown names are exactly what a user wants to see."""
+        agent = self.build([
+            Turn(tool_calls=[call("c1", "read_file", '{"path"'),
+                             call("c2", "nope", "{}")]),
+            Turn(content="ok"),
+        ])
+        events = self.observe(agent)
+        self.run_turn(agent)
+        ends = [e for e in events if e.phase == "end"]
+        self.assertEqual([e.name for e in ends], ["read_file", "nope"])
+        self.assertFalse(any(e.result.ok for e in ends))
+
+    def test_the_call_is_announced_before_the_user_is_asked_to_confirm(self):
+        """Otherwise the confirmation panel is the first sign anything happened."""
+        self.write("f.py", "x = 1\n")
+        seen: list = []
+
+        async def confirm(req):
+            seen.append(("confirm", req.tool))
+            return "yes"
+
+        agent = self.build([
+            Turn(tool_calls=[call("c1", "edit_file",
+                                  '{"path": "f.py", "old": "x = 1", '
+                                  '"new": "x = 2"}')]),
+            Turn(content="done"),
+        ], confirm=confirm)
+        agent.tool_sink = lambda e: seen.append((e.phase, e.name))
+        self.run_turn(agent)
+        self.assertEqual(seen, [("start", "edit_file"),
+                                ("confirm", "edit_file"),
+                                ("end", "edit_file")])
+
+    def test_a_ledger_hit_is_flagged_as_one(self):
+        self.write("f.py", "CONTENT\n")
+        agent = self.build([
+            Turn(tool_calls=[call("c1", "read_file", '{"path": "f.py"}')]),
+            Turn(tool_calls=[call("c2", "read_file", '{"path": "f.py"}')]),
+            Turn(content="ok"),
+        ])
+        events = self.observe(agent)
+        self.run_turn(agent)
+        ends = [e for e in events if e.phase == "end"]
+        self.assertFalse(ends[0].result.meta.get("ledger_hit"))
+        self.assertTrue(ends[1].result.meta.get("ledger_hit"))
+
+    def test_a_sink_that_raises_does_not_take_the_turn_down(self):
+        self.write("f.py", "x\n")
+
+        def broken(event):
+            raise RuntimeError("bad renderer")
+
+        agent = self.build([
+            Turn(tool_calls=[call("c1", "read_file", '{"path": "f.py"}')]),
+            Turn(content="ok"),
+        ])
+        agent.tool_sink = broken
+        self.assertEqual(self.run_turn(agent), "ok")
+
+
 # ---------------------------------------------------------- confirmation
 class TestConfirmation(AgentCase):
     def _edit_turns(self):

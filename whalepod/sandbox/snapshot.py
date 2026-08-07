@@ -21,25 +21,233 @@ two different files that flatten to the same name cannot overwrite each other's
 backup. Absence of a pre-existing file is recorded in the manifest
 (``existed: false``) instead of via a sibling ``.absent`` file, which used to
 collide with a real backup whose name differed only by suffix.
+
+Nothing used to remove any of this. One session dir per invocation that wrote a
+file accumulates forever, so the retention sweep below runs once per session, at
+the moment the session first writes something — see :class:`Retention`.
 """
 from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
-from dataclasses import dataclass, asdict
-from datetime import datetime
+from dataclasses import dataclass, asdict, field
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
+from typing import Iterable, Optional
 
 DEFAULT_BACKUP_DIR = Path.home() / ".whalepod" / "backups"
 MANIFEST_NAME = "manifest.json"
 MANIFEST_VERSION = 1
 
+# Session dirs are named by local timestamp, so the name sorts chronologically
+# and is the age of the session. Retention only ever considers directories that
+# match it: a backup root is under the user's home, and anything they parked
+# there by hand is not ours to delete.
+SESSION_STAMP = "%Y%m%d-%H%M%S"
+_STAMP_RE = re.compile(r"\d{8}-\d{6}$")
+
 
 def backup_root() -> Path:
     env = os.environ.get("WHALEPOD_BACKUP_DIR")
     return Path(env) if env else DEFAULT_BACKUP_DIR
+
+
+@dataclass
+class Retention:
+    """How much snapshot history to keep. Any limit set to 0 is disabled.
+
+    A snapshot is insurance, not history: it gets used minutes after the edit
+    that created it, or never. So the defaults are deliberately short — the
+    directory grew without bound because *nothing* expired, not because two
+    weeks was too aggressive.
+
+    ``max_sessions`` is counted over the *finished* sessions only. The session
+    currently being written is never counted and never deleted, so a full
+    directory transiently holds ``max_sessions + 1``.
+    """
+    max_sessions: int = 20       # keep this many newest sessions
+    max_age_days: float = 14.0   # delete sessions older than this
+    max_total_mb: float = 0.0    # delete oldest until the tree fits (0 = no cap)
+
+
+def session_time(session_dir: Path) -> datetime:
+    """When a session ran, from its directory name, falling back to mtime.
+
+    The name is preferred because it is what the session recorded for itself:
+    copying or restoring a backup tree rewrites mtimes but not names.
+    """
+    session_dir = Path(session_dir)
+    try:
+        return datetime.strptime(session_dir.name[-15:], SESSION_STAMP)
+    except ValueError:
+        pass
+    try:
+        return datetime.fromtimestamp(session_dir.stat().st_mtime)
+    except OSError:
+        return datetime.now()
+
+
+def dir_size(session_dir: Path) -> int:
+    total = 0
+    try:
+        for p in Path(session_dir).iterdir():
+            try:
+                total += p.stat().st_size
+            except OSError:
+                pass
+    except OSError:
+        pass
+    return total
+
+
+def prune_plan(backup_dir: Optional[Path] = None,
+               retention: Optional[Retention] = None,
+               keep: Iterable[Path] = ()) -> list[tuple[Path, str]]:
+    """Which session dirs the policy no longer covers, oldest first.
+
+    Returned as ``(dir, reason)`` so both the sweep and ``/backups`` can say
+    *why* something is going away instead of just making it vanish. This is the
+    dry run; :func:`prune` is the same selection plus the ``rmtree``.
+
+    Dirs with no manifest are included: a session killed between ``mkdir`` and
+    the first manifest write leaves one behind, and excluding them would make
+    that debris the one thing retention could never reclaim.
+    """
+    ret = retention or Retention()
+    base = Path(backup_dir) if backup_dir else backup_root()
+    if not base.is_dir():
+        return []
+    kept = set()
+    for k in keep:
+        try:
+            kept.add(Path(k).resolve())
+        except OSError:
+            pass
+    try:
+        cand = [d for d in base.iterdir()
+                if d.is_dir() and _STAMP_RE.search(d.name)
+                and d.resolve() not in kept]
+    except OSError:
+        return []
+    cand.sort(key=lambda d: d.name)                  # oldest first
+    doomed: dict[Path, str] = {}
+
+    if ret.max_age_days and ret.max_age_days > 0:
+        cutoff = datetime.now() - timedelta(days=ret.max_age_days)
+        for d in cand:
+            if session_time(d) < cutoff:
+                doomed[d] = f"older than {ret.max_age_days:g}d"
+
+    live = [d for d in cand if d not in doomed]
+    if ret.max_sessions and ret.max_sessions > 0:
+        over = max(0, len(live) - ret.max_sessions)
+        for d in live[:over]:
+            doomed[d] = f"over {ret.max_sessions} sessions"
+        live = live[over:]
+
+    if ret.max_total_mb and ret.max_total_mb > 0:
+        budget = ret.max_total_mb * 1024 * 1024
+        sizes = {d: dir_size(d) for d in live}
+        total = sum(sizes.values())
+        # ``live[:-1]``: the newest point is never traded for disk. One session
+        # bigger than the whole budget would otherwise take every other point
+        # with it and then itself, leaving nothing to roll back to.
+        for d in live[:-1]:                          # oldest first
+            if total <= budget:
+                break
+            total -= sizes[d]
+            doomed[d] = f"over {ret.max_total_mb:g} MB"
+
+    return [(d, doomed[d]) for d in cand if d in doomed]
+
+
+def prune(backup_dir: Optional[Path] = None,
+          retention: Optional[Retention] = None,
+          keep: Iterable[Path] = ()) -> list[tuple[Path, str]]:
+    """Apply :func:`prune_plan`. Returns what was actually deleted.
+
+    A dir that cannot be removed (locked file, permissions) is left out of the
+    report rather than counted as reclaimed — the next sweep will try again.
+    """
+    removed: list[tuple[Path, str]] = []
+    for d, reason in prune_plan(backup_dir, retention, keep):
+        try:
+            shutil.rmtree(d)
+        except OSError:
+            continue
+        removed.append((d, reason))
+    return removed
+
+
+@dataclass
+class SessionInfo:
+    """One backup point, as ``/backups`` needs to show it."""
+    dir: Path
+    when: datetime
+    files: int = 0
+    paths: list[str] = field(default_factory=list)
+    root: Optional[Path] = None
+    rolled_back: bool = False
+    bytes: int = 0
+    has_manifest: bool = True
+    expires: str = ""            # non-empty: the next sweep reclaims this one
+
+    @property
+    def session(self) -> str:
+        return self.dir.name
+
+
+def describe_sessions(backup_dir: Optional[Path] = None,
+                      retention: Optional[Retention] = None,
+                      keep: Iterable[Path] = ()) -> list[SessionInfo]:
+    """Every backup point, **newest first** — the order the timeline prints.
+
+    ``retention`` is only read to mark which points are already past it, so the
+    listing can warn before the next session silently reclaims them.
+    """
+    base = Path(backup_dir) if backup_dir else backup_root()
+    if not base.is_dir():
+        return []
+    doomed = dict(prune_plan(base, retention, keep)) if retention else {}
+    out: list[SessionInfo] = []
+    try:
+        dirs = [d for d in base.iterdir()
+                if d.is_dir() and _STAMP_RE.search(d.name)]
+    except OSError:
+        return []
+    for d in sorted(dirs, key=lambda p: p.name, reverse=True):
+        info = SessionInfo(dir=d, when=session_time(d), bytes=dir_size(d),
+                           expires=doomed.get(d, ""))
+        mf = d / MANIFEST_NAME
+        info.has_manifest = mf.is_file()
+        if info.has_manifest:
+            try:
+                data = json.loads(mf.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                data = {}
+            entries = data.get("entries") or []
+            info.files = len(entries)
+            info.rolled_back = bool(data.get("rolled_back"))
+            info.root = Path(data["root"]) if data.get("root") else None
+            info.paths = [_relative(e.get("path", ""), info.root)
+                          for e in entries]
+        out.append(info)
+    return out
+
+
+def _relative(path: str, root: Optional[Path]) -> str:
+    """Path as it reads in the session's own repo, absolute if it is elsewhere."""
+    if not path:
+        return "?"
+    p = Path(path)
+    if root:
+        try:
+            return p.relative_to(root).as_posix()
+        except ValueError:
+            pass
+    return p.as_posix()
 
 
 @dataclass
@@ -70,12 +278,13 @@ class Snapshot:
 class SnapshotManager:
     def __init__(self, backup_dir: Optional[Path] = None,
                  session_dir: Optional[Path] = None,
-                 root: Optional[Path] = None):
+                 root: Optional[Path] = None,
+                 retention: Optional[Retention] = None):
         base = Path(backup_dir) if backup_dir else backup_root()
         if session_dir is not None:
             self.session_dir = Path(session_dir)
         else:
-            stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+            stamp = datetime.now().strftime(SESSION_STAMP)
             self.session_dir = base / stamp
         # Created on first snapshot, not here: every WhalePod invocation builds a
         # manager, so eager mkdir left an empty directory behind for read-only
@@ -84,6 +293,11 @@ class SnapshotManager:
         self.root = Path(root).resolve() if root else None
         self.snapshots: list[Snapshot] = []
         self.rolled_back = False
+        # ``None`` means "do not sweep" — used by ``load()``, which re-opens an
+        # old session to restore it. Reclaiming disk is not that command's job,
+        # and an unlucky policy could otherwise delete its neighbours mid-restore.
+        self.retention = retention
+        self.pruned: list[tuple[Path, str]] = []
 
     # -- session discovery -------------------------------------------------
     @property
@@ -163,6 +377,12 @@ class SnapshotManager:
         if not self._dir_ready:
             self.session_dir.mkdir(parents=True, exist_ok=True)
             self._dir_ready = True
+            # Once, here, rather than per snapshot or per startup: this is the
+            # one moment we know the tree just grew, and a session that only
+            # read files should not pay for a directory scan.
+            if self.retention is not None:
+                self.pruned = prune(self.session_dir.parent, self.retention,
+                                    keep=[self.session_dir])
 
     def _write_manifest(self) -> None:
         if not self.snapshots and not self._dir_ready:

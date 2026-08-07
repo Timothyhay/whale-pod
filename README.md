@@ -17,7 +17,6 @@ against DeepSeek V4's official API (up to 37 requests each, 1M window):
 5.5 points. Every number comes from the `bench/` directory and both offline and
 live benches re-run with a single command (offline needs no key at all).
 
----
 
 ## Why the cache actually hits
 
@@ -51,7 +50,6 @@ Two conditions this rests on: **pin the provider** (a prefix cache is state on
 *one machine* — unpinned routing measured 0.4% hits vs 98.4% pinned) and **put
 the volatile part last**.
 
----
 
 ## Highlights
 
@@ -81,7 +79,6 @@ the volatile part last**.
 - **Snapshot safety** — each session writes a manifest so `whalepod rollback
   --session <id>` works from a fresh process.
 
----
 
 ## Quickstart
 
@@ -93,7 +90,6 @@ whalepod                 # start the REPL
 
 `/help` lists commands. `/mode` toggles thinking/instant.
 
----
 
 ## Configuration
 
@@ -134,7 +130,6 @@ false` means a silent reroute can't quietly cost you the whole cache.
 API keys resolve from: flags → `api_key_env` → `WHALEPOD_API_KEY` → provider
 defaults → `~/.whalepod/config.json` → `whalepod auth`. Never logged.
 
----
 
 ## Commands
 
@@ -152,7 +147,6 @@ defaults → `~/.whalepod/config.json` → `whalepod auth`. Never logged.
 **REPL commands:** `/mode` · `/stats` · `/context` · `/refresh` · `/rollback` ·
 `/clear` · `/help` · `/quit`
 
----
 
 ## Development
 

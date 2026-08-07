@@ -175,3 +175,8 @@ fast-tokenizes (official encoder + V4 BPE).
 ## License
 
 MIT
+
+
+<p align="center">
+  <img src="footer.png" alt="WhalePod footer" width="800">
+</p>

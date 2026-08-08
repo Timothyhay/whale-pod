@@ -39,6 +39,44 @@ from .ui import render as R
 
 _PROMPT = "\n\033[1;36m❯\033[0m "
 
+# -------------------------------------------------------- slash autocomplete
+_SLASH_COMMANDS = [
+    "/help", "/config", "/mode", "/trace", "/stats", "/context",
+    "/refresh", "/backups", "/rollback", "/clear", "/compact",
+    "/quit",
+]
+
+try:
+    from prompt_toolkit import PromptSession
+    from prompt_toolkit.completion import Completer, Completion
+    from prompt_toolkit.formatted_text import FormattedText
+    from prompt_toolkit.styles import Style as PTStyle
+
+    class SlashCompleter(Completer):
+        def get_completions(self, document, complete_event):
+            text = document.text_before_cursor.lstrip()
+            if text.startswith("/"):
+                for cmd in _SLASH_COMMANDS:
+                    if cmd.startswith(text):
+                        yield Completion(cmd, start_position=-len(text))
+
+    _PT_SESSION: "PromptSession | None" = None
+
+    def _get_prompt_session() -> PromptSession:
+        global _PT_SESSION
+        if _PT_SESSION is None:
+            _PT_SESSION = PromptSession(
+                FormattedText([("", "\n"), ("class:prompt", "❯ ")]),
+                completer=SlashCompleter(),
+                complete_while_typing=True,
+                style=PTStyle.from_dict({"prompt": "bold #00ffff"}),
+            )
+        return _PT_SESSION
+
+    _HAS_PROMPT_TOOLKIT = True
+except ImportError:
+    _HAS_PROMPT_TOOLKIT = False
+
 
 def _setup_encoding() -> None:
     """Render Unicode on Windows terminals instead of dying on cp1252."""
@@ -670,7 +708,10 @@ def repl():
                 session.echo(R.render_divider())
             first = False
             try:
-                user = input(_PROMPT)
+                if _HAS_PROMPT_TOOLKIT:
+                    user = _get_prompt_session().prompt()
+                else:
+                    user = input(_PROMPT)
             except (EOFError, KeyboardInterrupt):
                 click.echo("")
                 break
